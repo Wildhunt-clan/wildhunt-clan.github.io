@@ -362,7 +362,7 @@ function hslug(n){return HIMG_OVR[n]||pslug(n)}
 function portraitHTML(h){
   var s=hslug(h.name);
   if(!s) return portraitSVG(h);
-  var exts=['png','jpg','webp'];
+  var exts=['png','jpg','jpeg','webp'];
   var first='images/'+s+'.'+exts.shift();
   var alt=(h.name||'').replace(/"/g,'&quot;');
   return '<div class="pstack">'+portraitSVG(h)
