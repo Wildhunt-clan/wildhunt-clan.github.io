@@ -167,6 +167,7 @@ tr:hover td{background:#ffffff06}
 .hcard .pimg{margin:0 0 10px;border-radius:8px;overflow:hidden;border:1px solid #ffffff26;box-shadow:0 2px 10px #0006}
 .pimg svg{display:block;width:100%;height:auto}
 .hcard:hover .pimg svg{filter:brightness(1.1)}
+.pimg{position:relative}.pimg .pstack{position:relative}.pimg img.pphoto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;z-index:2}
 </style>
 </head>
 <body>
@@ -355,6 +356,23 @@ function hstr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function prng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function heroInitials(name){
   return (name||'').split(/[\s\-—]+/).filter(Boolean).map(w=>w[0]).join('').toUpperCase().slice(0,3);
+}
+var HIMG_OVR = {'Аид':'hades','Аполлон':'apollo','Афина':'athena','Геркулес':'hercules','Исида':'isis','Клеопатра':'cleopatra','Хеймдалль':'heimdall','Лагерта':'lagertha','Брюнхильда':'brynhildr','Беовульф':'beowulf','Король Артур':'king-arthur','Гавейн':'gawain','Персиваль':'percival','Зеленый рыцарь':'green-knight','Банши':'banshee','Кощей':'koschei','Леший':'leshy','Сунь Укун':'sun-wukong','Райдзин':'raijin','Фудзин':'fujin','Кетцалькоатль':'quetzalcoatl','Дракула':'dracula'};
+function hslug(n){return HIMG_OVR[n]||pslug(n)}
+function portraitHTML(h){
+  var s=hslug(h.name);
+  if(!s) return portraitSVG(h);
+  var exts=['png','jpg','webp'];
+  var first='images/'+s+'.'+exts.shift();
+  var alt=(h.name||'').replace(/"/g,'&quot;');
+  return '<div class="pstack">'+portraitSVG(h)
+    +'<img class="pphoto" loading="lazy" alt="'+alt+'" src="'+first+'" data-cands="'+exts.map(function(e){return 'images/'+s+'.'+e}).join('|')+'" onerror="imgFallback(this)">'
+    +'</div>';
+}
+function imgFallback(el){
+  var c=(el.getAttribute('data-cands')||'').split('|').filter(Boolean);
+  if(c.length){el.setAttribute('data-cands',c.slice(1).join('|'));el.src=c[0];}
+  else el.style.display='none';
 }
 function portraitSVG(h){
   const p = PPAL[h.pantheon]||['#cfd8e0','#3a4a5a','#0e161e'];
@@ -557,7 +575,7 @@ function renderHeroGrid(){
     const tb = TIER[h.name]? `<span class="tb">${tierBadge(TIER[h.name].tier)}</span>`:'';
     return `<div class="hcard ${rcls}" onclick="openHero(${JSON.stringify(h.name).replace(/"/g,'&quot;')})">
       ${tb}
-      <div class="pimg">${portraitSVG(h)}</div>
+      <div class="pimg">${portraitHTML(h)}</div>
       <h4>${esc(h.name)}</h4>
       <div class="sub">${esc(h.title)} · ${esc(h.pantheon)} · ${esc(h.archetype)}</div>
       <div class="rows">
@@ -583,7 +601,7 @@ function openHero(name){
   $('#hpage').innerHTML = `
     <button class="close" onclick="closeHero()">✕</button>
     <div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap">
-      <div class="pimg" style="flex:0 0 210px;max-width:210px">${portraitSVG(h)}</div>
+      <div class="pimg" style="flex:0 0 210px;max-width:210px">${portraitHTML(h)}</div>
       <div style="flex:1;min-width:250px">
     <h2>${esc(h.name)} <span class="muted" style="font-size:15px">· ${esc(h.title)}</span></h2>
     <p style="margin:4px 0 10px">
