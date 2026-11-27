@@ -74,6 +74,9 @@ button.btn.danger{background:linear-gradient(#8a2c1e,#5a1c10);color:#ffd9c4}
 .hcard .rows{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:12.5px}
 .mini{display:inline-block;padding:2px 8px;border-radius:6px;background:#ffffff10;font-size:11.5px;color:var(--text)}
 .hcard .tb{position:absolute;top:10px;right:10px;font-size:12px}
+@keyframes wakeUp{0%{opacity:0;transform:translateY(8px) scale(.97)}55%{box-shadow:0 0 22px rgba(255,213,74,.35)}100%{opacity:1;transform:none;box-shadow:0 0 0 rgba(255,213,74,0)}}
+.hcard{animation:wakeUp .5s ease both}
+@media(prefers-reduced-motion:reduce){.hcard{animation:none}}
 
 /* герой-страница */
 .overlay{position:fixed;inset:0;background:#000000d8;z-index:100;overflow-y:auto;display:none}
@@ -168,6 +171,17 @@ tr:hover td{background:#ffffff06}
 .pimg svg{display:block;width:100%;height:auto}
 .hcard:hover .pimg svg{filter:brightness(1.1)}
 .pimg{position:relative}.pimg .pstack{position:relative}.pimg img.pphoto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;z-index:2}
+
+@media(max-width:640px){
+ #hgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .hcard{padding:10px}
+ .hcard h4{font-size:14.5px}
+ .comps{grid-template-columns:1fr}
+ .compline{flex-direction:column;align-items:stretch}
+ .compline select,.compline .btn{width:100%;height:44px;font-size:15px}
+ .panel{padding:12px}
+ .overlay .hpage{width:100%;max-width:100%;border-radius:0}
+}
 </style>
 </head>
 <body>
@@ -574,10 +588,10 @@ function renderHeroGrid(){
   else if(HF.sort==='tier') list.sort((a,b)=>{const ta=TIER[a.name],tb=TIER[b.name];
     const va=ta?parseFloat(ta.score):-1, vb=tb?parseFloat(tb.score):-1; return vb-va;});
   else list.sort((a,b)=>a.name.localeCompare(b.name,'ru'));
-  $('#hgrid').innerHTML = list.map(h=>{
+  $('#hgrid').innerHTML = list.map((h,hi)=>{
     const rcls = h.rarity==='Эпический'?'epic':(h.rarity==='Редкий'?'rare':'');
     const tb = TIER[h.name]? `<span class="tb">${tierBadge(TIER[h.name].tier)}</span>`:'';
-    return `<div class="hcard ${rcls}" onclick="openHero(${JSON.stringify(h.name).replace(/"/g,'&quot;')})">
+    return `<div class="hcard ${rcls}" style="animation-delay:${hi*35}ms" onclick="openHero(${JSON.stringify(h.name).replace(/"/g,'&quot;')})">
       ${tb}
       <div class="pimg">${portraitHTML(h)}</div>
       <h4>${esc(h.name)}</h4>
@@ -864,15 +878,50 @@ function compHTML(bid){
     return `<div class="panel comp"><h4>${label}</h4>
       <div class="compline"><select id="sel-${key}">${D.data.heroes.map(h=>`<option>${esc(h.name)}</option>`).join('')}</select>
       <button class="btn mini" onclick="addComp('${key}')">+ Добавить</button>
+      <button class="btn mini" onclick="randComp('${key}')">🎲 Собрать</button>
       <button class="btn mini danger" onclick="clearComp('${key}')">Очистить</button></div>
       <div class="chips" id="chips-${key}">${compChips(key,list)}</div></div>`;
   }).join('')}</div>`;
+}
+function randComp(key){
+  const bid=(BOSSES.find(b=>key.startsWith(b.id+'_'))||{}).id||'';
+  const hs=D.data.heroes.slice();
+  const numv=v=>parseInt(String(v).replace(/\D/g,''))||0;
+  const has=(h,t)=>String(h.abilities||'').includes(t);
+  const isHealer=h=>/исцел|леч[аи]|восстанов|регенер/i.test(String(h.abilities||''));
+  const isDebuff=h=>/Заморозка|Кровотечени|Яд|Штраф|Ослаб|Проклят|Оглушени|Сон|Молчание|Немота|DEF Down|ATK Down|Слабост/i.test(String(h.abilities||''));
+  let pool=hs.slice(); const picks=[];
+  const take=h=>{ if(!h) return false; const i=pool.indexOf(h); if(i<0) return false;
+    pool.splice(i,1); picks.push(h); return true; };
+  const byName=n=>hs.find(h=>h.name===n);
+  const ban=[], force=[]; let freeze=false, pure=false;
+  if(bid==='goldguard'){ force.push('Анубис','Гончая Дуата','Сет','Беовульф'); ban.push('Скади'); }
+  if(bid==='fafnir'){ freeze=true; }
+  if(bid==='luktor'){ pure=true; }
+  pool=pool.filter(h=>!ban.includes(h.name));
+  force.forEach(n=>take(byName(n)));
+  if(pure) pool=pool.filter(h=>!isDebuff(h));
+  if(!picks.some(h=>h.archetype==='Защитник'))
+    take(pool.filter(h=>h.archetype==='Защитник').sort((a,b)=>numv(b.def)-numv(a.def))[0]);
+  if(!picks.some(isHealer))
+    take(pool.filter(isHealer).sort((a,b)=>numv(b.hp)-numv(a.hp))[0]);
+  let rest=pool.slice();
+  if(freeze){ const fz=rest.filter(h=>has(h,'[Заморозка]')); fz.forEach(h=>{take(h); rest=rest.filter(x=>x!==h);}); }
+  rest.sort((a,b)=>numv(b.atk)-numv(a.atk));
+  rest.slice(0,Math.max(0,5-picks.length)).forEach(h=>picks.push(h));
+  if(picks.length<5){ const extra=hs.filter(h=>!picks.includes(h)&&!ban.includes(h.name))
+    .sort((a,b)=>numv(b.atk)-numv(a.atk)); extra.slice(0,5-picks.length).forEach(h=>picks.push(h)); }
+  const names=picks.slice(0,5).map(h=>h.name);
+  LS.set(key,names);
+  const el=document.getElementById('chips-'+key);
+  if(el) el.innerHTML=compChips(key,names);
+  toast('Состав собран 🎲');
 }
 function addComp(key){
   const v=document.getElementById('sel-'+key).value;
   const list=LS.get(key,[]);
   if(list.includes(v)){ toast('Уже в составе'); return; }
-  if(list.length>=6){ toast('Максимум 6 героев'); return; }
+  if(list.length>=5){ toast('Максимум 5 героев'); return; }
   list.push(v); LS.set(key,list);
   document.getElementById('chips-'+key).innerHTML=compChips(key,list);
   toast('Добавлено: '+v);
