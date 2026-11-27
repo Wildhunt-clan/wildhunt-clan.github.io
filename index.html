@@ -163,6 +163,10 @@ tr:hover td{background:#ffffff06}
 .boss h4{margin:14px 0 6px;color:#e8d49a}
 .notesbox textarea{width:100%;min-height:90px;background:#14141f;border:1px solid #33334d;color:#eee;border-radius:8px;padding:10px;font-family:inherit;box-sizing:border-box}
 .small{font-size:13px}
+
+.hcard .pimg{margin:0 0 10px;border-radius:8px;overflow:hidden;border:1px solid #ffffff26;box-shadow:0 2px 10px #0006}
+.pimg svg{display:block;width:100%;height:auto}
+.hcard:hover .pimg svg{filter:brightness(1.1)}
 </style>
 </head>
 <body>
@@ -328,6 +332,118 @@ function renderHome(){
   </div>`;
 }
 
+
+/* ---------- фирменный генератор портретов Wild Hunt ---------- */
+const PPAL = {
+  'Асгард'  : ['#b9c9e2','#3b4f6e','#101a2c'],
+  'Идзумо'  : ['#f0a8b8','#8c2b44','#2b0a12'],
+  'Олимп'   : ['#f6dc94','#8f6b20','#2a1e07'],
+  'Авалон'  : ['#a8dcc0','#256e4c','#07231a'],
+  'Аару'    : ['#f2d29a','#96672b','#2c1a08'],
+  'Тянь'    : ['#a8e2d2','#1f7060','#06211c'],
+  'Вирадж'  : ['#c8a8e8','#5f2f96','#180a2c'],
+  'Омейокан': ['#e8a8d8','#8f2f6e','#2a0820'],
+  'Экур'    : ['#a8c8d8','#2f5a6e','#081a20']
+};
+const RRING = {'Легендарный':'#ffd76a','Эпический':'#b98cff','Редкий':'#6ab8ff'};
+const TRMAP = {'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya'};
+function pslug(n){
+  return (n||'').toLowerCase().split('').map(c=>TRMAP[c]!==undefined?TRMAP[c]:c).join('')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+}
+function hstr(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function prng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function heroInitials(name){
+  return (name||'').split(/[\s\-—]+/).filter(Boolean).map(w=>w[0]).join('').toUpperCase().slice(0,3);
+}
+function portraitSVG(h){
+  const p = PPAL[h.pantheon]||['#cfd8e0','#3a4a5a','#0e161e'];
+  const [L,M,Dk] = p;
+  const ring = RRING[h.rarity]||'#9aa8b4';
+  const r = prng(hstr(h.name));
+  const id = pslug(h.name)||'h';
+  const W=300,H=340,cx=150,cy=150;
+  const motif = ['rays','rings','peaks','petals','cog','crescent'][Math.floor(r()*6)];
+  let art = '';
+  if(motif==='rays'){
+    const n = 9+Math.floor(r()*7);
+    for(let i=0;i<n;i++){
+      const a0 = (Math.PI*2*i)/n + r()*0.2, w = 0.10+r()*0.10;
+      const x1=cx+Math.cos(a0-w)*40, y1=cy+Math.sin(a0-w)*40;
+      const x2=cx+Math.cos(a0)*150,  y2=cy+Math.sin(a0)*150;
+      const x3=cx+Math.cos(a0+w)*40, y3=cy+Math.sin(a0+w)*40;
+      art += `<path d="M ${x1.toFixed(1)} ${y1.toFixed(1)} L ${x2.toFixed(1)} ${y2.toFixed(1)} L ${x3.toFixed(1)} ${y3.toFixed(1)} Z" fill="${L}" opacity="0.14"/>`;
+    }
+  } else if(motif==='rings'){
+    const n = 3+Math.floor(r()*3);
+    for(let i=0;i<n;i++){
+      const rr = 46+i*(26+r()*14);
+      art += `<circle cx="${cx}" cy="${cy}" r="${rr.toFixed(1)}" fill="none" stroke="${i%2?L:M}" stroke-width="${(2+r()*3).toFixed(1)}" opacity="0.22"/>`;
+    }
+  } else if(motif==='peaks'){
+    const n = 3+Math.floor(r()*3);
+    for(let i=0;i<n;i++){
+      const px = 30+r()*(W-60), pw = 46+r()*70, ph = 90+r()*150;
+      art += `<path d="M ${(px-pw).toFixed(1)} ${H} L ${px.toFixed(1)} ${(H-ph).toFixed(1)} L ${(px+pw).toFixed(1)} ${H} Z" fill="${i%2?M:L}" opacity="0.20"/>`;
+    }
+  } else if(motif==='petals'){
+    const n = 5+Math.floor(r()*4);
+    for(let i=0;i<n;i++){
+      const a0 = (Math.PI*2*i)/n + r()*0.3;
+      art += `<ellipse cx="${cx}" cy="${cy-72}" rx="${(14+r()*12).toFixed(1)}" ry="${(40+r()*24).toFixed(1)}" fill="${i%2?L:M}" opacity="0.24" transform="rotate(${(a0*180/Math.PI).toFixed(1)} ${cx} ${cy})"/>`;
+    }
+  } else if(motif==='cog'){
+    const n = 8+Math.floor(r()*5);
+    for(let i=0;i<n;i++){
+      const a0 = (Math.PI*2*i)/n;
+      art += `<rect x="${cx-9}" y="${cy-118}" width="18" height="${(30+r()*22).toFixed(0)}" fill="${L}" opacity="0.20" transform="rotate(${(a0*180/Math.PI).toFixed(1)} ${cx} ${cy})"/>`;
+    }
+    art += `<circle cx="${cx}" cy="${cy}" r="86" fill="none" stroke="${L}" stroke-width="10" opacity="0.18"/>`;
+  } else {
+    art += `<circle cx="${cx+34}" cy="${cy-8}" r="66" fill="${L}" opacity="0.20"/><circle cx="${cx+52}" cy="${cy-2}" r="58" fill="${M}"/>`;
+    const st = 3+Math.floor(r()*5);
+    for(let i=0;i<st;i++){
+      art += `<circle cx="${(20+r()*(W-40)).toFixed(1)}" cy="${(16+r()*120).toFixed(1)}" r="${(1+r()*2.4).toFixed(1)}" fill="${L}" opacity="0.7"/>`;
+    }
+  }
+  const stars = [];
+  const ns = 9+Math.floor(r()*10);
+  for(let i=0;i<ns;i++){
+    stars.push(`<circle cx="${(8+r()*(W-16)).toFixed(1)}" cy="${(8+r()*(H-16)).toFixed(1)}" r="${(0.8+r()*1.8).toFixed(1)}" fill="${L}" opacity="${(0.15+r()*0.5).toFixed(2)}"/>`);
+  }
+  const hatch = [];
+  for(let i=-4;i<16;i++){
+    const x = i*34;
+    hatch.push(`<line x1="${x}" y1="${H}" x2="${x+150}" y2="0" stroke="${M}" stroke-width="1" opacity="0.18"/>`);
+  }
+  const ini = heroInitials(h.name);
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(h.name)}" style="display:block;width:100%;height:auto">
+  <defs>
+    <linearGradient id="pg-${id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${M}"/><stop offset="1" stop-color="${Dk}"/>
+    </linearGradient>
+    <radialGradient id="pgg-${id}" cx="0.5" cy="0.28" r="0.75">
+      <stop offset="0" stop-color="${L}" stop-opacity="0.30"/><stop offset="1" stop-color="${L}" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="pgv-${id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0.55" stop-color="${Dk}" stop-opacity="0"/><stop offset="1" stop-color="${Dk}" stop-opacity="0.85"/>
+    </linearGradient>
+  </defs>
+  <rect width="${W}" height="${H}" fill="url(#pg-${id})"/>
+  ${hatch.join('')}
+  <rect width="${W}" height="${H}" fill="url(#pgg-${id})"/>
+  ${art}
+  ${stars.join('')}
+  <rect width="${W}" height="${H}" fill="url(#pgv-${id})"/>
+  <circle cx="${cx}" cy="${cy}" r="58" fill="${Dk}" opacity="0.82"/>
+  <circle cx="${cx}" cy="${cy}" r="58" fill="none" stroke="${ring}" stroke-width="2.5" opacity="0.95"/>
+  <circle cx="${cx}" cy="${cy}" r="64" fill="none" stroke="${L}" stroke-width="1" opacity="0.35"/>
+  <text x="${cx}" y="${cy+15}" text-anchor="middle" font-family="Georgia,serif" font-size="44" font-weight="bold" letter-spacing="4" fill="#f4ead2">${ini}</text>
+  <rect x="6" y="6" width="${W-12}" height="${H-12}" rx="14" fill="none" stroke="${ring}" stroke-width="3" opacity="0.9"/>
+  <rect x="12" y="12" width="${W-24}" height="${H-24}" rx="10" fill="none" stroke="${L}" stroke-width="1" opacity="0.25"/>
+</svg>`;
+}
+
 /* ---------- таблицы ---------- */
 function tableFilter(id, tbodyId, cols){
   const q = $(id).value.toLowerCase();
@@ -441,6 +557,7 @@ function renderHeroGrid(){
     const tb = TIER[h.name]? `<span class="tb">${tierBadge(TIER[h.name].tier)}</span>`:'';
     return `<div class="hcard ${rcls}" onclick="openHero(${JSON.stringify(h.name).replace(/"/g,'&quot;')})">
       ${tb}
+      <div class="pimg">${portraitSVG(h)}</div>
       <h4>${esc(h.name)}</h4>
       <div class="sub">${esc(h.title)} · ${esc(h.pantheon)} · ${esc(h.archetype)}</div>
       <div class="rows">
@@ -465,6 +582,9 @@ function openHero(name){
   const stat = (k,l)=>`<div class="stcell"><div class="v">${esc(h[k])}</div><div class="k">${l}</div></div>`;
   $('#hpage').innerHTML = `
     <button class="close" onclick="closeHero()">✕</button>
+    <div style="display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap">
+      <div class="pimg" style="flex:0 0 210px;max-width:210px">${portraitSVG(h)}</div>
+      <div style="flex:1;min-width:250px">
     <h2>${esc(h.name)} <span class="muted" style="font-size:15px">· ${esc(h.title)}</span></h2>
     <p style="margin:4px 0 10px">
       <span class="r-${esc(h.rarity)} tag">${esc(h.rarity)}</span>
@@ -473,6 +593,8 @@ function openHero(name){
       ${t? tierBadge(t.tier, true)+` <span class="muted">рейтинг ${t.score} баллов</span>`:''}
     </p>
     ${t? `<div class="ablock" style="border-left-color:${D.tiersMeta[t.tier]||'#888'}"><b class="serif">Вердикт обзора:</b> <i>${esc(t.verdict)}</i></div>`:''}
+    </div>
+    </div>
     <h3 class="serif" style="color:var(--gold2);margin-top:14px">Характеристики</h3>
     <div class="stgrid">
       ${stat('hp','ОЗ')}${stat('atk','АТК')}${stat('def','ЗАЩ')}${stat('spd','СКР')}${stat('fth','Вера')}
