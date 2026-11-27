@@ -357,17 +357,20 @@ function prng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>1
 function heroInitials(name){
   return (name||'').split(/[\s\-—]+/).filter(Boolean).map(w=>w[0]).join('').toUpperCase().slice(0,3);
 }
-var HIMG_OVR = {'Аид':['hades'],'Аполлон':['apollo'],'Афина':['athena'],'Геркулес':['hercules'],'Исида':['isis'],'Клеопатра':['cleopatra'],'Хеймдалль':['heimdall'],'Лагерта':['lagertha'],'Брюнхильда':['brynhildr'],'Беовульф':['beowulf'],'Король Артур':['king-arthur'],'Гавейн':['gawain'],'Персиваль':['percival'],'Зеленый рыцарь':['green-knight'],'Банши':['banshee'],'Кощей':['koschei'],'Леший':['leshy'],'Сунь Укун':['sun-wukong'],'Райдзин':['raijin'],'Фудзин':['fujin'],'Кетцалькоатль':['quetzalcoatl'],'Дракула':['dracula'],'Артемида':['artemis','artemida'],'Вивиан':['vivian','viviane','vivienne'],'Идзанаги':['izanagi','idzanagi'],'Идзанами':['izanami','idzanami'],'Мецтли':['meztli','metstli'],'Фея Моргана':['morgan','morgan-le-fay','morgana','feya-morgana'],'Фрейя':['freya','freyya'],'Цизин':['cizin','tsizin'],'Янь Ван':['yanwang','yan-wang','yan-van']};
-function hslug(n){var v=HIMG_OVR[n];if(v)return v.slice();var p=pslug(n);return p?[p]:[]}
+var HIMG_OVR = {
+  'Аид':['hades'],'Аполлон':['apollo'],'Афина':['athena'],'Геркулес':['hercules'],'Исида':['isis'],'Клеопатра':['cleopatra'],'Хеймдалль':['heimdall'],'Лагерта':['lagertha'],'Брюнхильда':['brynhildr'],'Беовульф':['beowulf'],'Король Артур':['king-arthur'],'Гавейн':['gawain'],'Персиваль':['percival'],'Зеленый рыцарь':['green-knight'],'Банши':['banshee'],'Кощей':['koschei'],'Леший':['leshy'],'Сунь Укун':['sun-wukong'],'Райдзин':['raijin'],'Фудзин':['fujin'],'Кетцалькоатль':['quetzalcoatl'],'Дракула':['dracula'],
+  'Артемида':['artemis','artemida'],'Фрейя':['freya','freyya'],'Цизин':['cizin','tsizin'],'Идзанаги':['izanagi','idzanagi'],'Идзанами':['izanami','idzanami'],'Мецтли':['metztli','metzli','metstli'],'Фея Моргана':['morgan','morgan-le-fay','morgana','feya-morgana'],'Янь Ван':['yanwang','yan-wang','yan-van'],'Вивиан':['vivian','viviane','vivienne']
+};
+function hslugs(n){var o=HIMG_OVR[n];if(o)return o.slice();var p=pslug(n);return p?[p]:[];}
 function portraitHTML(h){
-  var slugs=hslug(h.name);
+  var slugs=hslugs(h.name);
   if(!slugs.length) return portraitSVG(h);
   var exts=['png','jpg','jpeg','webp'];
-  var urls=[];
-  slugs.forEach(function(s){exts.forEach(function(e){urls.push('images/'+s+'.'+e)})});
+  var cands=[];
+  for(var i=0;i<slugs.length;i++){for(var j=0;j<exts.length;j++){cands.push('images/'+slugs[i]+'.'+exts[j]);}}
   var alt=(h.name||'').replace(/"/g,'&quot;');
   return '<div class="pstack">'+portraitSVG(h)
-    +'<img class="pphoto" loading="lazy" alt="'+alt+'" src="'+urls[0]+'" data-cands="'+urls.slice(1).join('|')+'" onerror="imgFallback(this)">'
+    +'<img class="pphoto" loading="lazy" alt="'+alt+'" src="'+cands[0]+'" data-cands="'+cands.slice(1).join('|')+'" onerror="imgFallback(this)">'
     +'</div>';
 }
 function imgFallback(el){
