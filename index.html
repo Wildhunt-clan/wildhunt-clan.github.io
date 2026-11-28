@@ -186,18 +186,35 @@ tr:hover td{background:#ffffff06}
 /* ---- рандомайзер ---- */
 .rsub{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
 .rsub .btn.on{outline:2px solid #f5c04a;outline-offset:-2px}
-.rcard{border:1px solid #2a3444;border-radius:12px;padding:14px;margin:10px 0;background:rgba(255,255,255,.03)}
+.rcard{border:1px solid rgba(200,150,62,.45);border-radius:14px;padding:16px;margin:10px 0;background:linear-gradient(180deg,rgba(200,150,62,.07),rgba(0,0,0,.15))}
+.rcard h3{color:#f5c04a;letter-spacing:.02em}
 .rmech{margin:6px 0 10px;padding-left:18px}
 .rmech li{margin:4px 0}
 .rok,.robad{border-radius:10px;padding:10px 12px;margin:8px 0}
 .rok{border-left:3px solid #58c470;background:rgba(88,196,112,.08)}
 .robad{border-left:3px solid #e05a5a;background:rgba(224,90,90,.08)}
 .rok ul,.robad ul{margin:6px 0 0;padding-left:18px}
-.rlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;margin:10px 0}
-.rhero{display:flex;gap:10px;align-items:flex-start;border:1px solid #2a3444;border-radius:10px;padding:8px}
+.rlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin:12px 0}
+.rhero{position:relative;border:1px solid rgba(200,150,62,.35);border-radius:12px;padding:12px 12px 12px 40px;background:rgba(255,215,130,.04)}
+.rslot{position:absolute;left:10px;top:12px;width:22px;height:22px;border-radius:50%;background:#c8963e;color:#1a1208;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}
+.rhero-main{display:flex;gap:12px;align-items:flex-start}
 .rhero .pstack{flex:0 0 56px}
 .rhero .pstack img{width:56px;height:64px;object-fit:cover;border-radius:8px}
-.rhero b{display:block}
+.rhero-info{flex:1;min-width:0}
+.rhero-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.rhero b{display:block;font-size:15px}
+.rbadge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;white-space:nowrap}
+.rbc-gold{background:rgba(245,192,74,.18);color:#f5c04a;border:1px solid rgba(245,192,74,.5)}
+.rbc-grn{background:rgba(88,196,112,.15);color:#7bd68f;border:1px solid rgba(88,196,112,.45)}
+.rbc-vio{background:rgba(176,122,224,.15);color:#c39aea;border:1px solid rgba(176,122,224,.45)}
+.rbc-org{background:rgba(230,140,70,.15);color:#f0a06a;border:1px solid rgba(230,140,70,.45)}
+.rstats{display:flex;gap:10px;margin:4px 0;font-size:12px;color:#e8d9b0}
+.rtraits{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0}
+.rtraits span{font-size:11px;padding:1px 8px;border-radius:8px;border:1px solid rgba(200,150,62,.4);color:#f0dca8;background:rgba(200,150,62,.08)}
+.rwhy{margin:6px 0 0;color:#d8cba8;border-top:1px dashed rgba(200,150,62,.3);padding-top:6px}
+.rplan{border:1px solid rgba(200,150,62,.35);border-radius:10px;padding:10px 12px;margin:10px 0;background:rgba(245,192,74,.06)}
+.rplan b{color:#f5c04a}
+.racts{display:flex;gap:10px;margin-top:10px}
 .rfoot{margin-top:8px;color:#9aa8b4}
 @media(max-width:640px){.rlist{grid-template-columns:1fr}.rsub .btn{flex:1 1 auto}}
 </style>
@@ -306,7 +323,7 @@ function heroChip(name){
 /* ================= РАНДОМАЙЗЕР ================= */
 const RMODES=['Подземелье','Боссы','Клан босс','Башни','Арена'];
 let RMode='Подземелье', RBoss='', RRes=null;
-const RINFO={'Подземелье':'Подземелье — марафон на выживание. Каркас: защитник, лекарь, щитовик и бьющий — в подземелье ходят четверо.','Боссы':'Выберите босса — покажу его механики, что против него работает и что вредит, и соберу пачку.','Клан босс':'Chronos бессмертен: урон клана наполняет шкалу «Эпоха». Каркас «анкор-танк + лекарь + ровный урон».','Башни':'Этажи — это волны врагов плюс босс этажа: нужны AoE-герои и нюкер.','Арена':'Здесь решает скорость: пачка с высоким SPD диктует темп с первого хода.'};
+const RINFO={'Подземелье':'Подземелье — марафон на выживание. Каркас из четырёх: защитник, лекарь, щитовик и бьющий.','Боссы':'Выберите босса — покажу его механики, что против него работает и что вредит, и соберу пачку.','Клан босс':'Chronos бессмертен: урон клана наполняет шкалу «Эпоха». Каркас «анкор-танк + лекарь + ровный урон».','Башни':'Этажи — это волны врагов плюс босс этажа: нужны AoE-герои и нюкер.','Арена':'Здесь решает скорость: пачка с высоким SPD диктует темп с первого хода.'};
 const RWOK={
  fafnir:{ok:['[Заморозка] срезает 50% чешуи мгновенно — Ran и Skadi экономят целый раунд.','Мультиудар: каждый удар снимает 1 стак чешуи — мультиатака осыпает чешую быстрее.','Бёрст в окно слабости: после снятия чешуи босс получает +50% урона.'],bad:['Урон мимо окна слабости — при стачах он почти не идёт в здоровье.','Ульта босса лечит его на 30% ОЗ — держите прерывание и контроль.']},
  goldguard:{ok:['Срез божественности: Anubis, Hound of Duat, Set — ульты держите к моменту казни.','Оружие Амэ-но-Нубоко — дополнительный срез, если есть в снаряжении.','Beowulf — финальный бёрст по окну казни.','Редкие тяжёлые удары: босс копит божественность за каждый полученный удар.'],bad:['Skadi и мультиударные пачки — разгоняют божественность к казни.','Серии мелких ударов — кормят босса и приближают казнь.']},
@@ -316,52 +333,131 @@ const RWOK={
  ahpuch:{ok:['Универсальный каркас: сильный лекарь, чистка дебаффов, бафы на пачку.'],bad:['Специализация под неподтверждённые механики — кит босса ещё уточняется сообществом.']}
 };
 function rnum(v){return parseInt(String(v||'').replace(/\D/g,''))||0}
-function rHealer(h){return /исцел|леч[аи]|восстанов|регенер/i.test(String(h.abilities||''))}
+function rHealer(h){
+  const A=String(h.abilities||'');
+  if(!/исцел|леч|восстанов|регенер/i.test(A))return false;
+  const re=/(?:исцел|леч|восстанов)[а-яё]*[^.;]{0,60}?(\d+)%\s?(ОЗ|HP)/ig;
+  let m;
+  while((m=re.exec(A))){
+    const frag=A.substr(m.index,Math.min(m[0].length+40,A.length-m.index));
+    if(!/урона/i.test(frag)&&/союзник|команд|всем|союзник[а-яё]*|себя и союзник/i.test(A.substr(Math.max(0,m.index-30),m[0].length+70)))return true;
+  }
+  return false;
+}
 function rShield(h){return /[Щщ]ит/.test(String(h.abilities||''))}
 function rAoe(h){return /всех враг|все враг|площад/i.test(String(h.abilities||''))}
 function rDebuff(h){return /Заморозка|Кровотечени|Яд|Штраф|Ослаб|Проклят|Оглушени|Сон|Молчание|Немота|Слабост/i.test(String(h.abilities||''))}
-function buildSquad(mode,bid){
-  const hs=D.data.heroes; let pool=hs.slice(); const picks=[];
-  const take=h=>{if(!h)return;const i=pool.indexOf(h);if(i<0)return;pool.splice(i,1);picks.push(h)};
-  const top=(pred,sf)=>{const c=pool.filter(pred);c.sort(sf);if(c[0])take(c[0])};
-  const dps=(a,b)=>rnum(b.atk)-rnum(a.atk);
-  const tnk=(a,b)=>rnum(b.def)-rnum(a.def);
-  const spd=(a,b)=>rnum(b.spd)-rnum(a.spd);
-  const ban=[],force=[];
-  if(mode==='Боссы'&&bid==='goldguard'){force.push('Anubis','Hound of Duat','Set','Beowulf');ban.push('Skadi')}
-  pool=pool.filter(h=>ban.indexOf(h.name)<0);
-  force.forEach(n=>take(pool.find(h=>h.name===n)));
-  if(mode==='Боссы'&&bid==='luktor')pool=pool.filter(h=>!rDebuff(h));
-  if(mode==='Подземелье'||mode==='Клан босс'||mode==='Боссы'){
-    if(!picks.some(h=>h.archetype==='Защитник'))top(h=>h.archetype==='Защитник',tnk);
-    if(!picks.some(rHealer))top(rHealer,(a,b)=>rnum(b.fth)-rnum(a.fth));
+let RSeed=0;
+function rShuffle(a){
+  let c=(RSeed*2654435761)%2147483647||1;
+  for(let i=a.length-1;i>0;i--){c=(c*1103515245+12345)%2147483648;const j=c%(i+1);const t=a[i];a[i]=a[j];a[j]=t}
+  return a;
+}
+function rCleanse(h){return /снимает? дебафф|снять дебафф|очищает? .{0,20}дебафф|снимает? все (дебафф|эффект)/i.test(String(h.abilities||''))}
+function rHealPct(h){
+  const A=String(h.abilities||'');
+  const re=/(?:исцел|леч|восстанов)[а-яё]*[^.;]{0,60}?(\d+)%\s?(ОЗ|HP)/ig;
+  let m;
+  while((m=re.exec(A))){
+    const frag=A.substr(m.index,Math.min(m[0].length+40,A.length-m.index));
+    if(!/урона/i.test(frag))return m[1];
   }
-  if(mode==='Подземелье'&&!picks.some(rShield))top(rShield,tnk);
+  return '';
+}
+function rShieldPct(h){const m=String(h.abilities||'').match(/[Щщ]ит[а-яё]*[^.;]{0,60}?(\d+)%/);return m?m[1]:''}
+let rRanks=null;
+function rRankMaps(){
+  if(rRanks)return rRanks;
+  const hs=D.data.heroes,m={};
+  ['atk','def','spd'].forEach(function(k){
+    const s=hs.slice().sort(function(x,y){return rnum(y[k])-rnum(x[k])});
+    s.forEach(function(h,i){(m[h.name]=m[h.name]||{})[k]=i+1});
+  });
+  hs.filter(h=>h.archetype==='Защитник').slice().sort((x,y)=>rnum(y.def)-rnum(x.def))
+    .forEach((h,i)=>{(m[h.name]=m[h.name]||{}).def_t=i+1});
+  hs.filter(rShield).slice().sort((x,y)=>rnum(y.def)-rnum(x.def))
+    .forEach((h,i)=>{(m[h.name]=m[h.name]||{}).def_s=i+1});
+  rRanks=m;return m;
+}
+function rTraits(h){
+  const A=String(h.abilities||''),t=[];
+  if(/Заморозка/i.test(A))t.push('Заморозка');
+  if(rHealer(h))t.push('Лечение');
+  if(rShield(h))t.push('Щит');
+  if(rAoe(h))t.push('AoE');
+  if(/Кровотечени/i.test(A))t.push('Кровотечение');
+  if(/Яд/i.test(A))t.push('Яд');
+  if(/Оглушени|Сон/i.test(A))t.push('Контроль');
+  if(rCleanse(h))t.push('Очистка');
+  if(/Прерыв/i.test(A))t.push('Прерывание');
+  if(/[Уу]величивает атаку|[Уу]силивает атаку|АТК [Uu]p|[Аа]така союзник/i.test(A))t.push('Баф атаки');
+  return t;
+}
+function buildSquad(mode,bid){
+  const hs=D.data.heroes; let pool=hs.slice(); const picks=[],roles=[];
+  const take=(h,role)=>{if(!h)return;const i=pool.indexOf(h);if(i<0)return;pool.splice(i,1);picks.push(h);roles.push(role||'Урон')};
+  const top=(pred,sf,role)=>{const c=pool.filter(pred);c.sort(sf);if(c[0])take(c[0],role)};
+  const dps=(x,y)=>rnum(y.atk)-rnum(x.atk);
+  const tnk=(x,y)=>rnum(y.def)-rnum(x.def);
+  const spd=(x,y)=>rnum(y.spd)-rnum(x.spd);
+  const limit=mode==='Подземелье'?4:5;
+  const ban=[],force=[];
+  if(mode==='Боссы'&&bid==='goldguard'){force.push(['Anubis','Срез божественности'],['Hound of Duat','Срез божественности'],['Set','Срез божественности'],['Beowulf','Финальный бёрст']);ban.push('Skadi')}
+  pool=pool.filter(h=>ban.indexOf(h.name)<0);
+  force.forEach(p=>take(pool.find(h=>h.name===p[0]),p[1]));
+  if(mode==='Боссы'&&bid==='luktor')pool=pool.filter(h=>!rDebuff(h));
+  if(mode==='Подземелье'||mode==='Клан босс'||mode==='Боссы'||mode==='Башни'){
+    if(!picks.some(h=>h.archetype==='Защитник'))top(h=>h.archetype==='Защитник',tnk,'Танк');
+    if(!picks.some(rHealer))top(rHealer,(x,y)=>rnum(y.fth)-rnum(x.fth),'Лекарь');
+  }
+  if(mode==='Подземелье'&&!picks.some(rShield))top(rShield,tnk,'Щитовик');
   if(mode==='Боссы'&&bid==='fafnir'){
-    pool.sort((a,b)=>{const fa=/Заморозка/i.test(String(a.abilities||''))?1:0,fb=/Заморозка/i.test(String(b.abilities||''))?1:0;return fb-fa||dps(a,b)});
+    if(!picks.some(h=>/Заморозка/i.test(String(h.abilities||'')))){
+      const fz=pool.filter(h=>/Заморозка/i.test(String(h.abilities||''))).sort(dps);
+      if(fz[0])take(fz[0],'Срез чешуи');
+    }
+    pool.sort((x,y)=>{const fa=/Заморозка/i.test(String(x.abilities||''))?1:0,fb=/Заморозка/i.test(String(y.abilities||''))?1:0;return fb-fa||dps(x,y)});
+  } else if(mode==='Боссы'&&bid==='gurah'){
+    const aoe=pool.filter(rAoe).sort(dps).slice(0,2);aoe.forEach(h=>take(h,'Гашение тотемов'));pool.sort(dps);
+  } else if(mode==='Боссы'&&bid==='ahpuch'){
+    if(!picks.some(rCleanse)){const cl=pool.filter(rCleanse).sort(tnk);if(cl[0])take(cl[0],'Очистка дебаффов')}
+    pool.sort(dps);
   } else if(mode==='Башни'){
-    if(!picks.some(h=>h.archetype==='Защитник'))top(h=>h.archetype==='Защитник',tnk);
-    const aoe=pool.filter(rAoe).sort(dps).slice(0,2);aoe.forEach(take);pool.sort(dps);
+    const aoe=pool.filter(rAoe).sort(dps).slice(0,2);aoe.forEach(h=>take(h,'AoE по волнам'));pool.sort(dps);
   } else if(mode==='Арена'){
-    if(!picks.some(h=>h.archetype==='Защитник'))top(h=>h.archetype==='Защитник',tnk);
+    if(!picks.some(h=>h.archetype==='Защитник'))top(h=>h.archetype==='Защитник',tnk,'Танк');
     pool.sort(spd);
   } else pool.sort(dps);
-  const LIM=(mode==='Подземелье')?4:5;
-  while(picks.length<LIM&&pool.length){const h=pool.shift();if(h)picks.push(h)}
-  return picks.slice(0,LIM);
+  const fill=pool.slice(); if(RSeed)rShuffle(fill);
+  while(picks.length<limit&&fill.length)take(fill.shift(),'Урон');
+  return {picks:picks.slice(0,limit),roles:roles.slice(0,limit)};
 }
-function rWhy(h,mode,bid){
-  const A=String(h.abilities||''),a=h.archetype;
-  if(mode==='Боссы'&&bid==='fafnir'&&/Заморозка/i.test(A))return '[Заморозка]: срезает 50% чешуи — экономит целый раунд';
-  if(mode==='Боссы'&&bid==='goldguard')return 'Квартет среза божественности и бёрста в окно казни';
-  if(mode==='Боссы'&&bid==='luktor')return 'Без дебаффов в способностях — не кормит усиление босса';
-  if(a==='Защитник')return 'Защитник: принимает удар босса на себя';
-  if(rHealer(h))return 'Лекарь: держит ОЗ пачки через весь бой';
-  if(rShield(h))return 'Щит: поглощает часть урона, разгружает лекаря';
-  if(rAoe(h)&&mode==='Башни')return 'AoE: чистит волны без потери темпа';
-  if(mode==='Арена')return 'SPD '+h.spd+' — ходит первым и диктует темп';
-  if(mode==='Клан босс')return 'Ровный урон каждый ход — под кап 25% ничего не сгорает';
-  return 'Бьющий: АТК '+h.atk+' — максимум урона в окно слабости';
+function rWhy(h,role,R){
+  const mode=R.mode,bid=R.bid,A=String(h.abilities||'');
+  const rk=rRankMaps()[h.name]||{}; const N=D.data.heroes.length;
+  const bits=[];
+  if(mode==='Боссы'&&bid==='fafnir'&&/Заморозка/i.test(A))bits.push('Заморозка срезает 50% чешуи Fafnir — так открывается окно слабости (+50% урона)');
+  if(mode==='Боссы'&&bid==='goldguard')bits.push(/божествен/i.test(A)?'Ульта входит в квартет среза божественности — копите её к моменту казни':'Бьёт в окно казни, когда божественность уже срезана');
+  if(mode==='Боссы'&&bid==='gurah'&&rAoe(h))bits.push('AoE гасит тотемы поджига — именно это делает босса уязвимым');
+  if(mode==='Боссы'&&bid==='ahpuch'&&rCleanse(h))bits.push('Чистит дебаффы с пачки — страховка от ещё не подтверждённых механик босса');
+  if(mode==='Боссы'&&bid==='luktor')bits.push('В ките нет дебаффов — босс не получает усиление от этой пачки');
+  if(mode==='Боссы'&&bid==='daimyo'&&/КД/.test(A))bits.push('Сокращает КД ульт — пачка ультует чаще по миньонам');
+  if(role==='Танк')bits.push('Защитник · ЗАЩ '+h.def+' — '+(rk.def_t||rk.def)+'-й по защите среди Защитников ('+N+' героев). Принимает удары на себя, пока бьющие работают');
+  else if(role==='Лекарь'){const hp=rHealPct(h);bits.push('Лекарь · ВЕРА '+h.fth+(hp?' — лечение '+hp+'% ОЗ из кита':'')+' — держит ОЗ пачки весь бой')}
+  else if(role==='Щитовик'){const sp=rShieldPct(h);bits.push('Щитовик · ЗАЩ '+h.def+' — '+(rk.def_s||rk.def)+'-й по защите среди щитовиков из '+N+(sp?'; щит поглощает '+sp+'% урона до того, как он дойдёт до ОЗ':'; щит разгружает лекаря'))}
+  else if(role==='Срез чешуи')bits.push('АТК '+h.atk+' — '+rk.atk+'-й по атаке из '+N+'. Заморозкой срезает чешую быстрее любого урона');
+  else if(role==='Срез божественности')bits.push('АТК '+h.atk+' — '+rk.atk+'-й по атаке из '+N+'. Срезает божественность Золотого Стража');
+  else if(role==='Финальный бёрст')bits.push('АТК '+h.atk+' — '+rk.atk+'-й по атаке из '+N+'. Добивает босса в окне казни');
+  else if(role==='Очистка дебаффов')bits.push('Снимает дебаффы с пачки — без него механики босса ломают каркас');
+  else if(role==='AoE по волнам')bits.push('АТК '+h.atk+' — '+rk.atk+'-й по атаке из '+N+'. AoE чистит волны башни без потери темпа');
+  else if(role==='Гашение тотемов')bits.push('АТК '+h.atk+' — '+rk.atk+'-й по атаке из '+N+'. Гасит тотемы в правильном порядке');
+  else if(mode==='Арена')bits.push('АТК '+h.atk+' — '+rk.atk+'-й по атаке из '+N+'; СПД '+h.spd+' — '+rk.spd+'-й по скорости — ходит раньше врагов');
+  else bits.push('Урон · АТК '+h.atk+' — '+rk.atk+'-й по атаке из '+N);
+  if(mode==='Клан босс')bits.push('Ровный урон каждый ход — под кап 25% шкалы «Эпоха» урон не сгорает');
+  const tr=rTraits(h).filter(t=>!bits.some(b2=>b2.toLowerCase().indexOf(t.toLowerCase())>=0)).slice(0,2);
+  tr.forEach(t=>bits.push('Козырь: '+t));
+  const out=Array.from(new Set(bits)).slice(0,3);
+  return out.join('. ') + (out.length?'.':'');
 }
 function rFooter(mode,bid){
  if(mode==='Боссы'){
@@ -373,7 +469,7 @@ function rFooter(mode,bid){
   ahpuch:'Кит босса не подтверждён — взят универсальный каркас: лекарь, чистка дебаффов, бафы.'};
   return m[bid]||'';
  }
- if(mode==='Подземелье')return 'Каркас выживания: защитник принимает урон, лекарь и щитовик гасят просадки, бьющий добивает — в подземелье команда из четырёх.';
+ if(mode==='Подземелье')return 'Каркас из четырёх: защитник принимает урон, лекарь и щитовик гасят просадки, бьющий добивает.';
  if(mode==='Клан босс')return 'Анкор-танк держит удар, лекарь поддерживает, урон ровный (кап 25%). Сродство меняется ежедневно — пересоберите пачку под сегодняшнее.';
  if(mode==='Башни')return 'Первые слоты — AoE под волны, замыкает нюкер по боссу этажа.';
  if(mode==='Арена')return 'Пачка отсортирована по SPD: быстрые ходят первыми и диктуют темп.';
@@ -382,14 +478,28 @@ function rFooter(mode,bid){
 function rCard(t,body){return '<div class="rcard"><h3>'+t+'</h3>'+body+'</div>'}
 function rSquadHTML(R){
   const b=R.bid?BOSSES.find(x=>x.id===R.bid):null;
-  const t='🎲 Пачка — '+R.mode+(b?' — '+esc(b.name):'');
-  let body='<div class="rlist">'+R.picks.map(function(h){
-    return '<div class="rhero">'+portraitHTML(h)+'<div><b>'+esc(h.name)+'</b><span class="muted small">'+esc(h.archetype)+' · '+esc(h.pantheon||'')+'</span><p class="small">'+esc(rWhy(h,R.mode,R.bid))+'</p></div></div>';
+  const t='🎲 Пачка — '+R.mode+(b?' — '+esc(b.name):'')+(RSeed?' · вариант '+(RSeed+1):'');
+  const rbc={'Танк':'gold','Лекарь':'grn','Щитовик':'vio','Урон':'org','Срез чешуи':'gold','Срез божественности':'gold','Финальный бёрст':'gold','Очистка дебаффов':'grn','AoE по волнам':'org','Гашение тотемов':'org'};
+  let body='<div class="rlist">'+R.picks.map(function(h,i){
+    const role=R.roles[i]||'Урон';
+    const traits=rTraits(h);
+    return '<div class="rhero">'
+      +'<div class="rslot">'+(i+1)+'</div>'
+      +'<div class="rhero-main">'+portraitHTML(h)
+      +'<div class="rhero-info">'
+      +'<div class="rhero-top"><b>'+esc(h.name)+'</b><span class="rbadge rbc-'+(rbc[role]||'org')+'">'+esc(role)+'</span></div>'
+      +'<span class="muted small">'+esc(h.rarity)+' · '+esc(h.pantheon||'')+'</span>'
+      +'<div class="rstats"><span>АТК '+h.atk+'</span><span>ЗАЩ '+h.def+'</span><span>СПД '+h.spd+'</span></div>'
+      +(traits.length?'<div class="rtraits">'+traits.map(x=>'<span>'+esc(x)+'</span>').join('')+'</div>':'')
+      +'<p class="small rwhy">'+esc(rWhy(h,role,R))+'</p>'
+      +'</div></div></div>';
   }).join('')+'</div>';
   const f=rFooter(R.mode,R.bid);
-  if(f)body+='<p class="small rfoot">'+esc(f)+'</p>';
+  if(f)body+='<div class="rplan"><b>План боя</b><p class="small">'+esc(f)+'</p></div>';
+  body+='<div class="racts"><button class="btn" onclick="rAgain()">🎲 Другой вариант</button></div>';
   return rCard(t,body);
 }
+function rAgain(){RSeed++;rBuild(RBoss||'')}
 function renderRand(){
   const root=document.getElementById('tab-🎲 Рандомайзер');
   if(!root)return;
@@ -407,7 +517,7 @@ function rRenderSubs(){
 }
 function rSetMode(m){RMode=m;if(m!=='Боссы')RBoss='';RRes=null;rRenderSubs();rRender()}
 function rSelBoss(v){RBoss=v;RRes=null;rRender()}
-function rBuild(bid){RRes={mode:RMode,bid:bid||'',picks:buildSquad(RMode,bid||'')};rRender()}
+function rBuild(bid){const S=buildSquad(RMode,bid||'');RRes={mode:RMode,bid:bid||'',picks:S.picks,roles:S.roles};rRender()}
 function rRender(){
   const root=document.getElementById('rbody'); if(!root)return;
   let html='';
