@@ -194,6 +194,11 @@ tr:hover td{background:#ffffff06}
 .cmp-wrap table{min-width:520px}
 .cmp-wrap td,.cmp-wrap th{vertical-align:top}
 .cmp-abilities{font-size:12.5px;line-height:1.5;white-space:pre-wrap}
+
+.improw{cursor:pointer}
+.improw:hover td{background:rgba(255,215,130,.05)}
+.impdetail td{background:rgba(255,215,130,.04);font-size:14.5px}
+.dettitle{color:var(--gold2);font-weight:700;font-size:13px;letter-spacing:.4px;text-transform:uppercase;margin-bottom:2px}
 </style>
 </head>
 <body>
@@ -571,31 +576,44 @@ function renderImpDesc(){
 const IMP_RATE = {"Sun Wukong": {"tier": "S+", "score": 11.4, "sp": false, "rng": "> 8"}, "Чернобог": {"tier": "S+", "score": 9.0, "sp": true, "rng": ""}, "Морриган": {"tier": "S+", "score": 9.0, "sp": false, "rng": ""}, "Musashi": {"tier": "S+", "score": 8.7, "sp": false, "rng": ""}, "Mulan": {"tier": "S", "score": 8.0, "sp": true, "rng": "5,5 - 8"}, "Xolotl": {"tier": "S", "score": 7.9, "sp": false, "rng": ""}, "Ода Нобунага": {"tier": "S", "score": 7.5, "sp": false, "rng": ""}, "Имир": {"tier": "S", "score": 7.5, "sp": true, "rng": ""}, "Morgan Le Fay": {"tier": "S", "score": 7.5, "sp": true, "rng": ""}, "Nebuchadnezzar": {"tier": "S", "score": 7.5, "sp": true, "rng": ""}, "Onryo": {"tier": "S", "score": 7.5, "sp": true, "rng": ""}, "Y Ddraig Goch": {"tier": "S", "score": 7.13, "sp": true, "rng": ""}, "Anubis": {"tier": "S", "score": 7.0, "sp": false, "rng": ""}, "Hercules": {"tier": "S", "score": 6.0, "sp": false, "rng": ""}, "Devana": {"tier": "S", "score": 6.0, "sp": true, "rng": ""}, "Hattori Hanzo": {"tier": "S", "score": 5.75, "sp": true, "rng": ""}, "Torkell": {"tier": "S", "score": 5.75, "sp": true, "rng": ""}, "Pazuzu": {"tier": "A", "score": 5.5, "sp": false, "rng": "3,5 - 5,5"}, "Xquic": {"tier": "A", "score": 5.25, "sp": false, "rng": ""}, "Isis": {"tier": "A", "score": 6.0, "sp": true, "rng": ""}, "King Arthur": {"tier": "A", "score": 5.5, "sp": true, "rng": ""}, "Cizin": {"tier": "A", "score": 7.5, "sp": true, "rng": ""}, "Dagonet": {"tier": "A", "score": 5.0, "sp": true, "rng": ""}, "Белобог": {"tier": "A", "score": 4.5, "sp": false, "rng": ""}, "Geri": {"tier": "A", "score": 4.5, "sp": false, "rng": ""}, "Sigurd": {"tier": "A", "score": 4.5, "sp": false, "rng": ""}, "Freya": {"tier": "A", "score": 4.0, "sp": false, "rng": ""}, "Izanagi": {"tier": "A", "score": 4.0, "sp": false, "rng": ""}, "Heimdall": {"tier": "A", "score": 4.0, "sp": false, "rng": ""}, "Luoshen": {"tier": "A", "score": 4.0, "sp": false, "rng": ""}, "Ninurta": {"tier": "A", "score": 4.0, "sp": false, "rng": ""}, "Pandora": {"tier": "A", "score": 4.0, "sp": false, "rng": ""}, "Inari": {"tier": "A", "score": 4.0, "sp": false, "rng": ""}, "Shorn One": {"tier": "A", "score": 4.0, "sp": false, "rng": ""}, "Камазоц": {"tier": "A", "score": 3.75, "sp": false, "rng": ""}, "Хорус": {"tier": "A", "score": 4.0, "sp": true, "rng": ""}, "Ra": {"tier": "A", "score": 4.0, "sp": true, "rng": ""}, "Мардук": {"tier": "A", "score": 4.0, "sp": true, "rng": ""}, "Achilles": {"tier": "A", "score": 4.0, "sp": true, "rng": ""}, "Xipe Totec": {"tier": "A", "score": 4.0, "sp": true, "rng": ""}, "Oni": {"tier": "A", "score": 4.0, "sp": true, "rng": ""}, "Dobrynya": {"tier": "A", "score": 3.75, "sp": true, "rng": ""}, "Аматэрасу": {"tier": "A", "score": 3.5, "sp": false, "rng": ""}, "Quetzalcoatl": {"tier": "A", "score": 4.0, "sp": false, "rng": ""}, "Metztli": {"tier": "A", "score": 3.5, "sp": false, "rng": ""}, "Nanaya": {"tier": "A", "score": 3.38, "sp": false, "rng": ""}, "Leonidas": {"tier": "A", "score": 3.38, "sp": false, "rng": ""}, "Gogmagog": {"tier": "A", "score": 3.38, "sp": false, "rng": ""}, "Король-Рыбак": {"tier": "A", "score": 3.5, "sp": true, "rng": ""}, "Apollo": {"tier": "B", "score": 3.0, "sp": false, "rng": "2 - 3"}, "Grendel": {"tier": "B", "score": 3.0, "sp": false, "rng": ""}, "Кинич Ахау": {"tier": "B", "score": 3.0, "sp": false, "rng": ""}, "Пангу": {"tier": "B", "score": 3.0, "sp": false, "rng": ""}, "Xochiquetzal": {"tier": "B", "score": 3.0, "sp": false, "rng": ""}, "Bran": {"tier": "B", "score": 3.0, "sp": false, "rng": ""}, "Ran": {"tier": "B", "score": 3.0, "sp": false, "rng": ""}, "Xbalanque": {"tier": "B", "score": 3.0, "sp": false, "rng": ""}, "Green Knight": {"tier": "B", "score": 3.0, "sp": false, "rng": ""}, "Gawain": {"tier": "B", "score": 3.0, "sp": false, "rng": ""}, "Aya": {"tier": "B", "score": 3.0, "sp": false, "rng": ""}, "Li Naomasa": {"tier": "B", "score": 2.75, "sp": false, "rng": ""}, "Dracula": {"tier": "B", "score": 3.0, "sp": true, "rng": ""}, "Сфинкс": {"tier": "B", "score": 3.0, "sp": true, "rng": ""}, "Izanami": {"tier": "B", "score": 3.0, "sp": true, "rng": ""}, "Jiutian": {"tier": "B", "score": 3.0, "sp": true, "rng": ""}, "Tengu": {"tier": "B", "score": 3.0, "sp": true, "rng": ""}, "Tzilacatzin": {"tier": "B", "score": 3.0, "sp": true, "rng": ""}, "Hel": {"tier": "B", "score": 2.5, "sp": false, "rng": ""}, "Mokosh": {"tier": "B", "score": 2.5, "sp": false, "rng": ""}, "Osiris": {"tier": "B", "score": 2.5, "sp": false, "rng": ""}, "Ishtar": {"tier": "B", "score": 2.5, "sp": false, "rng": ""}, "Ulfhednar": {"tier": "B", "score": 2.5, "sp": false, "rng": ""}, "Babi": {"tier": "B", "score": 2.5, "sp": false, "rng": ""}, "Kenshin": {"tier": "B", "score": 2.4, "sp": false, "rng": ""}, "Yan Wang": {"tier": "B", "score": 2.25, "sp": false, "rng": ""}, "Gilgamesh": {"tier": "B", "score": 2.25, "sp": false, "rng": ""}, "Тлалок": {"tier": "B", "score": 2.25, "sp": true, "rng": ""}, "Asag": {"tier": "B", "score": 5.0, "sp": true, "rng": ""}, "Bauk": {"tier": "B", "score": 2.25, "sp": true, "rng": ""}, "Ramses": {"tier": "B", "score": 2.5, "sp": true, "rng": ""}, "Guan Yu": {"tier": "B", "score": 2.5, "sp": true, "rng": ""}, "Athena": {"tier": "B", "score": 2.17, "sp": false, "rng": ""}, "Hades": {"tier": "B", "score": 2.0, "sp": false, "rng": ""}, "Один": {"tier": "B", "score": 2.0, "sp": false, "rng": ""}, "Brynhild": {"tier": "B", "score": 2.0, "sp": false, "rng": ""}, "Poludnitsa": {"tier": "B", "score": 2.0, "sp": false, "rng": ""}, "Xi Wangmu": {"tier": "B", "score": 2.0, "sp": false, "rng": ""}, "Ceridwen": {"tier": "B", "score": 2.0, "sp": false, "rng": ""}, "Lagertha": {"tier": "B", "score": 2.0, "sp": false, "rng": ""}, "Seeress": {"tier": "B", "score": 2.0, "sp": false, "rng": ""}, "Persephone": {"tier": "B", "score": 1.88, "sp": false, "rng": ""}, "Ixchel": {"tier": "B", "score": 1.8, "sp": false, "rng": ""}, "Viviane": {"tier": "B", "score": 2.0, "sp": true, "rng": ""}, "Lady Xoc": {"tier": "B", "score": 2.0, "sp": true, "rng": ""}, "Icarus": {"tier": "B", "score": 2.0, "sp": true, "rng": ""}, "Cait Sith": {"tier": "B", "score": 2.0, "sp": true, "rng": ""}, "Энки": {"tier": "B", "score": 1.94, "sp": true, "rng": ""}, "Gozu": {"tier": "B", "score": 1.8, "sp": true, "rng": ""}, "Lu Bu": {"tier": "B", "score": 1.75, "sp": true, "rng": ""}, "Svarog": {"tier": "C", "score": 1.5, "sp": false, "rng": "1 - 1,5"}, "Fujin": {"tier": "C", "score": 1.5, "sp": false, "rng": ""}, "Lamashtu": {"tier": "C", "score": 1.5, "sp": false, "rng": ""}, "Imhotep": {"tier": "C", "score": 1.5, "sp": false, "rng": ""}, "Leshy": {"tier": "C", "score": 1.5, "sp": false, "rng": ""}, "Shinigami": {"tier": "C", "score": 1.5, "sp": false, "rng": ""}, "Ragnar Lothbrok": {"tier": "C", "score": 1.5, "sp": false, "rng": ""}, "Ankhesenamon": {"tier": "C", "score": 1.5, "sp": false, "rng": ""}, "Nefertiti": {"tier": "C", "score": 1.5, "sp": false, "rng": ""}, "Nezha": {"tier": "C", "score": 1.43, "sp": false, "rng": ""}, "Tomoe Gozen": {"tier": "C", "score": 1.33, "sp": false, "rng": ""}, "Зевс": {"tier": "C", "score": 1.4, "sp": true, "rng": ""}, "Mezu": {"tier": "C", "score": 1.35, "sp": true, "rng": ""}, "Ninsun": {"tier": "C", "score": 1.2, "sp": false, "rng": ""}, "Anu": {"tier": "C", "score": 1.0, "sp": false, "rng": ""}, "Ares": {"tier": "C", "score": 1.0, "sp": false, "rng": ""}, "Beowulf": {"tier": "C", "score": 1.0, "sp": false, "rng": ""}, "Sun Tzu": {"tier": "C", "score": 1.0, "sp": false, "rng": ""}, "Hunahpu": {"tier": "C", "score": 1.0, "sp": false, "rng": ""}, "Himiko": {"tier": "C", "score": 1.0, "sp": false, "rng": ""}, "Muse": {"tier": "C", "score": 1.0, "sp": false, "rng": ""}, "Nitocris": {"tier": "C", "score": 1.0, "sp": false, "rng": ""}, "Tristan": {"tier": "C", "score": 1.0, "sp": false, "rng": ""}, "Ma Chao": {"tier": "C", "score": 1.0, "sp": false, "rng": ""}, "Vidar": {"tier": "C", "score": 1.0, "sp": false, "rng": ""}, "Orpheus": {"tier": "C", "score": 1.0, "sp": false, "rng": ""}, "Vesna": {"tier": "C", "score": 0.96, "sp": false, "rng": ""}, "Cyclops": {"tier": "C", "score": 0.94, "sp": false, "rng": ""}, "Percival": {"tier": "C", "score": 0.75, "sp": false, "rng": ""}, "Polyphemus": {"tier": "C", "score": 1.13, "sp": true, "rng": ""}, "Loki": {"tier": "C", "score": 1.0, "sp": true, "rng": ""}, "Shamash": {"tier": "C", "score": 1.0, "sp": true, "rng": ""}, "Bastet": {"tier": "C", "score": 1.0, "sp": true, "rng": ""}, "Mabon": {"tier": "C", "score": 1.0, "sp": true, "rng": ""}, "Koshchei": {"tier": "C", "score": 1.0, "sp": true, "rng": ""}, "Freki": {"tier": "C", "score": 1.0, "sp": true, "rng": ""}, "Aslaug": {"tier": "C", "score": 1.0, "sp": true, "rng": ""}, "Афродита": {"tier": "C", "score": 0.75, "sp": true, "rng": ""}, "Тяньлун": {"tier": "C", "score": 0.75, "sp": true, "rng": ""}, "Chang’e": {"tier": "C", "score": 0.75, "sp": true, "rng": ""}, "Maria Morevna": {"tier": "D", "score": 0.67, "sp": false, "rng": "< 1"}, "Hippolyta": {"tier": "D", "score": 0.6, "sp": false, "rng": ""}, "Raijin": {"tier": "D", "score": 0.5, "sp": false, "rng": ""}, "Hound of Duat": {"tier": "D", "score": 0.5, "sp": false, "rng": ""}, "Sargon": {"tier": "D", "score": 0.5, "sp": false, "rng": ""}, "Isolde": {"tier": "D", "score": 0.5, "sp": false, "rng": ""}, "Tutankhamun": {"tier": "D", "score": 0.5, "sp": false, "rng": ""}, "Artemis": {"tier": "D", "score": 0.43, "sp": false, "rng": ""}, "Perun": {"tier": "D", "score": 0.38, "sp": false, "rng": ""}, "Set": {"tier": "D", "score": 0.33, "sp": false, "rng": ""}, "Lada": {"tier": "D", "score": 0.33, "sp": false, "rng": ""}, "Banshee": {"tier": "D", "score": 0.6, "sp": true, "rng": ""}, "Fenrir": {"tier": "D", "score": 0.5, "sp": true, "rng": ""}, "Ryujin": {"tier": "D", "score": 0.5, "sp": true, "rng": ""}, "Xtabay": {"tier": "D", "score": 0.5, "sp": true, "rng": ""}, "Odysseus": {"tier": "D", "score": 0.5, "sp": true, "rng": ""}, "Diao Chan": {"tier": "D", "score": 0.5, "sp": true, "rng": ""}, "Akuma": {"tier": "D", "score": 0.5, "sp": true, "rng": ""}, "Eurydice": {"tier": "D", "score": 0.5, "sp": true, "rng": ""}, "Skadi": {"tier": "D", "score": 0.5, "sp": true, "rng": ""}, "Volkodlak": {"tier": "D", "score": 0.5, "sp": true, "rng": ""}, "Mordred": {"tier": "D", "score": 0.33, "sp": true, "rng": ""}, "Cleopatra": {"tier": "D", "score": 0.25, "sp": false, "rng": ""}, "Shishi": {"tier": "D", "score": 0.25, "sp": false, "rng": ""}, "Enkidu": {"tier": "D", "score": 0.25, "sp": false, "rng": ""}, "Minotaur": {"tier": "D", "score": 0.25, "sp": true, "rng": ""}, "Hou Yi": {"tier": "D", "score": 0.1, "sp": true, "rng": ""}};
 const IMP_TIERS = ['S+','S','A','B','C','D'];
 let IMPF = {tier:'Все', q:''};
-function impSetTier(t){ IMPF.tier = t; drawImpTier(); }
-function impSetQ(){ IMPF.q = document.getElementById('iptq').value; drawImpTier(); }
-function impSetSort(){ LS.set('impSort', document.getElementById('ipts').value); drawImpTier(); }
-function impToggle(i){
-  const el = document.getElementById('impdet'+i);
-  if(el) el.style.display = el.style.display==='none' ? '' : 'none';
+function impSetTier(t){
+  IMPF.tier = t;
+  document.querySelectorAll('#imp-tier .subtabs button').forEach(b=>{
+    b.classList.toggle('on', b.getAttribute('data-tier')===t);
+  });
+  impRenderRows();
 }
-function renderImpTier(){
-  const all = D.data.imprints.map(imp=>{
+function impSetQ(){ IMPF.q = document.getElementById('iptq').value; impRenderRows(); }
+function impSetSort(){ LS.set('impSort', document.getElementById('ipts').value); impRenderRows(); }
+function impBuildList(){
+  let list = D.data.imprints.map(imp=>{
     const r = IMP_RATE[imp.hero];
     return r ? Object.assign({}, r, {imp: imp}) : null;
   }).filter(Boolean);
+  list = list.filter(r => IMPF.tier==='Все' || r.tier===IMPF.tier);
+  if(IMPF.q){
+    const q = IMPF.q.toLowerCase();
+    list = list.filter(r => (r.imp.name+' '+r.imp.hero+' '+r.imp.effect).toLowerCase().includes(q));
+  }
+  const sortMode = LS.get('impSort','score');
+  if(sortMode==='score') list.sort((a,b)=> b.score - a.score || (parseInt(a.imp.num,10)||0)-(parseInt(b.imp.num,10)||0));
+  else list.sort((a,b)=> (parseInt(a.imp.num,10)||0)-(parseInt(b.imp.num,10)||0));
+  return list;
+}
+function renderImpTier(){
   const counts = {};
-  all.forEach(r=>{ counts[r.tier]=(counts[r.tier]||0)+1; });
+  D.data.imprints.forEach(imp=>{ const r=IMP_RATE[imp.hero]; if(r) counts[r.tier]=(counts[r.tier]||0)+1; });
   const chips = ['Все'].concat(IMP_TIERS).map(t=>{
     const on = (IMPF.tier===t) ? ' on' : '';
     const col = D.tiersMeta[t] || 'var(--gold)';
     const style = (t==='Все') ? '' : ' style="color:'+col+';border-color:'+col+'55"';
-    const n = (t==='Все') ? all.length : (counts[t]||0);
-    return '<button class="'+on+'"'+style+' onclick="impSetTier(\''+t+'\')">'+t+' <span class="n">'+n+'</span></button>';
+    const n = (t==='Все') ? D.data.imprints.length : (counts[t]||0);
+    return '<button class="'+on+'" data-tier="'+t+'"'+style+' onclick="impSetTier(\''+t+'\')">'+t+' <span class="n">'+n+'</span></button>';
   }).join('');
   const sortMode = LS.get('impSort','score');
   $('#imp-tier').innerHTML = `
   <div class="panel">
-    <h3>Тир-лист импринтов <span class="muted">(${all.length})</span></h3>
+    <h3>Тир-лист импринтов <span class="muted" id="imp-cnt"></span></h3>
     <div class="toolrow">
       <input id="iptq" placeholder="Поиск: импринт, герой, эффект…" style="min-width:260px" value="${esc(IMPF.q)}" oninput="impSetQ()">
       <select id="ipts" onchange="impSetSort()">
@@ -606,37 +624,30 @@ function renderImpTier(){
     <div class="subtabs">${chips}</div>
     <div style="overflow-x:auto;max-height:64vh;overflow-y:auto"><table>
       <thead><tr><th>Тир</th><th>Балл</th><th>Импринт</th><th>Герой</th></tr></thead>
-      <tbody id="impTierRows"></tbody></table></div>
+      <tbody id="imp-rows"></tbody></table></div>
     <div class="muted" style="margin-top:8px">«сп» — эффект ситуативный: раскрывается в конкретных составах и против определённых боссов. Клик по строке — описание умения и примечание.</div>
   </div>`;
-  drawImpTier();
+  impRenderRows();
 }
-function drawImpTier(){
-  const el = $('#impTierRows'); if(!el) return;
-  let list = D.data.imprints.map(imp=>{
-    const r = IMP_RATE[imp.hero];
-    return r ? Object.assign({}, r, {imp: imp}) : null;
-  }).filter(Boolean);
-  list = list.filter(r => IMPF.tier==='Все' || r.tier===IMPF.tier);
-  if(IMPF.q){
-    const q = IMPF.q.toLowerCase();
-    list = list.filter(r => (r.imp.name+' '+r.imp.hero+' '+r.imp.effect+' '+(r.imp.note||'')).toLowerCase().includes(q));
-  }
-  const sortMode = LS.get('impSort','score');
-  if(sortMode==='score') list.sort((a,b)=> b.score - a.score || (parseInt(a.imp.num,10)||0)-(parseInt(b.imp.num,10)||0));
-  else list.sort((a,b)=> (parseInt(a.imp.num,10)||0)-(parseInt(b.imp.num,10)||0));
-  if(!list.length){ el.innerHTML = '<tr><td colspan="4" class="muted" style="padding:14px">Ничего не найдено.</td></tr>'; return; }
+function impRenderRows(){
+  const tb = document.getElementById('imp-rows'); if(!tb) return;
+  const list = impBuildList();
+  const cnt = document.getElementById('imp-cnt'); if(cnt) cnt.textContent = '('+list.length+')';
   const fmt = v => String(v).replace('.',',');
-  el.innerHTML = list.map((r,i)=>`<tr class="improw" onclick="impToggle(${i})" style="cursor:pointer">
-        <td>${tierBadge(r.tier)}</td>
-        <td><b style="color:var(--gold2)">${fmt(r.score)}</b>${r.rng?`<div class="muted">${esc(r.rng)}</div>`:''}</td>
-        <td><b>${esc(r.imp.name)}</b> <span class="muted">№${esc(r.imp.num)}</span>${r.sp?' <span class="pill">сп</span>':''}</td>
-        <td><span class="pill" style="cursor:pointer" onclick="event.stopPropagation();openHero(${JSON.stringify(r.imp.hero).replace(/"/g,'&quot;')})">${esc(r.imp.hero)}</span></td>
-      </tr>
-      <tr id="impdet${i}" style="display:none"><td colspan="4" style="background:rgba(255,211,91,0.04)">
-        <div style="padding:6px 4px"><b style="color:var(--gold2)">Описание умений:</b> ${esc(r.imp.effect)}</div>
-        ${r.imp.note?`<div style="padding:2px 4px"><b style="color:var(--gold2)">Примечание:</b> <span class="muted">${esc(r.imp.note)}</span></div>`:''}
-      </td></tr>`).join('');
+  tb.innerHTML = list.map(r=>`<tr class="improw" onclick="impTgl(this)">
+    <td>${tierBadge(r.tier)}</td>
+    <td><b style="color:var(--gold2)">${fmt(r.score)}</b>${r.rng?`<div class="muted">${esc(r.rng)}</div>`:''}</td>
+    <td><b>${esc(r.imp.name)}</b>${r.sp?' <span class="pill">сп</span>':''}</td>
+    <td><span class="pill" style="cursor:pointer" onclick="event.stopPropagation();openHero(${JSON.stringify(r.imp.hero).replace(/"/g,'&quot;')})">${esc(r.imp.hero)}</span></td>
+  </tr>
+  <tr class="impdetail" style="display:none"><td colspan="4">
+    <div class="dettitle">Описание умения</div><div>${esc(r.imp.effect)}</div>
+    ${r.imp.note?`<div class="dettitle" style="margin-top:6px">Примечание</div><div class="muted">${esc(r.imp.note)}</div>`:''}
+  </td></tr>`).join('') || '<tr><td colspan="4" class="muted">Ничего не найдено.</td></tr>';
+}
+function impTgl(tr){
+  const d = tr.nextElementSibling;
+  if(d && d.classList.contains('impdetail')) d.style.display = (d.style.display==='none')?'table-row':'none';
 }
 function renderEffects(){
   $('#sub-effects').innerHTML = `
@@ -776,57 +787,64 @@ $('#overlay').addEventListener('click', e=>{ if(e.target===e.currentTarget) clos
 document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeHero(); });
 
 /* ---------- тир-лист ---------- */
-let TLF = {tier:'Все', q:''};
-function tlSetTier(t){ TLF.tier = t; drawTierList(); }
-function tlSetQ(){ TLF.q = document.getElementById('tltq').value; drawTierList(); }
+let TF = {q:'', tier: LS.get('tierF','Все')};
 function renderTier(){
   const el = $('#sub-tl');
   const counts = {};
-  D.tier.forEach(x=>{ if(x.tier) counts[x.tier]=(counts[x.tier]||0)+1; });
-  const chips = ['Все'].concat(TIER_ORDER).filter(t=>t==='Все'||counts[t]).map(t=>{
-    const on = (TLF.tier===t) ? ' on' : '';
-    const col = D.tiersMeta[t] || 'var(--gold)';
+  D.tier.forEach(x=>{ counts[x.tier]=(counts[x.tier]||0)+1; });
+  const chips = ['Все'].concat(TIER_ORDER).map(t=>{
+    const on = (TF.tier===t) ? ' on' : '';
+    const col = D.tiersMeta[t] || '#888';
     const style = (t==='Все') ? '' : ' style="color:'+col+';border-color:'+col+'55"';
-    return '<button class="'+on+'"'+style+' onclick="tlSetTier(\''+t+'\')">'+t+' <span class="n">'+counts[t]+'</span></button>';
+    const n = (t==='Все') ? D.tier.length : (counts[t]||0);
+    return '<button class="'+on+'" data-tier="'+t+'"'+style+' onclick="tierSetTier(\''+t+'\')">'+t+' <span class="n">'+n+'</span></button>';
   }).join('');
   el.innerHTML = `
   <div class="panel">
     <h3>Тир-лист легендарных героев</h3>
     <p class="muted" style="margin-bottom:6px">Разбор аналитика клана: ${D.tier.length} легендарных героев, финальный балл за базу, навыки, пробуды и специализацию. Клик по герою — полная карточка с вердиктом.</p>
     <div class="toolrow">
-      <input id="tltq" placeholder="Поиск: герой, вердикт…" style="min-width:260px" value="${esc(TLF.q)}" oninput="tlSetQ()">
+      <input id="ttq" placeholder="Поиск: герой или вердикт…" style="min-width:260px" value="${esc(TF.q)}" oninput="tierSetQ()">
     </div>
     <div class="subtabs">${chips}</div>
-    <div id="tlList"></div>
+    <div id="tierlist"></div>
   </div>`;
-  drawTierList();
+  renderTierList();
 }
-function drawTierList(){
-  const el = $('#tlList'); if(!el) return;
-  let list = D.tier.filter(x=> TLF.tier==='Все' || x.tier===TLF.tier);
-  if(TLF.q){
-    const q = TLF.q.toLowerCase();
-    list = list.filter(x=> ((x.hero||'')+' '+(x.verdict||'')).toLowerCase().includes(q));
-  }
-  if(!list.length){ el.innerHTML = '<p class="muted">Ничего не найдено.</p>'; return; }
-  el.innerHTML = TIER_ORDER.map(t=>{
-    const items = list.filter(x=>x.tier===t).sort((a,b)=>parseFloat(b.score||0)-parseFloat(a.score||0));
+function tierSetQ(){ TF.q = (document.getElementById('ttq')||{}).value||''; renderTierList(); }
+function tierSetTier(t){
+  TF.tier = t; LS.set('tierF', t);
+  document.querySelectorAll('#sub-tl .subtabs button').forEach(b=>{
+    b.classList.toggle('on', b.getAttribute('data-tier')===t);
+  });
+  renderTierList();
+}
+function renderTierList(){
+  const box = document.getElementById('tierlist'); if(!box) return;
+  const q = TF.q.trim().toLowerCase();
+  let total = 0;
+  const html = TIER_ORDER.filter(t=> TF.tier==='Все' || t===TF.tier).map(t=>{
+    let items = D.tier.filter(x=>x.tier===t);
+    if(q) items = items.filter(x=> ((x.hero||'')+' '+(x.pdf_name||'')+' '+(x.verdict||'')).toLowerCase().includes(q));
+    items = items.slice().sort((a,b)=>parseFloat(b.score||0)-parseFloat(a.score||0));
     if(!items.length) return '';
+    total += items.length;
     const c = D.tiersMeta[t]||'#888';
     return `<div class="tiersection">
-        <div class="tierhead"><span class="tierbadge" style="color:${c};border:2px solid ${c}88;background:${c}18;font-size:19px;padding:5px 16px">${t}</span>
-        <span class="tiername">${esc((D.tiersMetaLabel||{})[t]||t)}</span><span class="tierlabel">${items.length} героев</span></div>
-        <div class="tcards">${items.map(x=>`
-          <div class="tcard" onclick="openHero(${JSON.stringify(x.hero).replace(/"/g,'&quot;')})">
-            <div class="top">
-              <b class="serif" style="font-size:16.5px;color:var(--gold2)">${esc(x.hero||x.pdf_name)}</b>
-              ${x.score?`<span class="score">${esc(x.score)} <span style="font-size:12px" class="muted">баллов</span></span>`:''}
-            </div>
-            <div class="verd">${esc(x.verdict)}</div>
-          </div>`).join('')}
-        </div>
-      </div>`;
+      <div class="tierhead"><span class="tierbadge" style="color:${c};border:2px solid ${c}88;background:${c}18;font-size:19px;padding:5px 16px">${t}</span>
+      <span class="tiername">${esc((D.tiersMetaLabel||{})[t]||t)}</span><span class="tierlabel">${items.length} героев</span></div>
+      <div class="tcards">${items.map(x=>`
+        <div class="tcard" onclick="openHero(${JSON.stringify(x.hero).replace(/"/g,'&quot;')})">
+          <div class="top">
+            <b class="serif" style="font-size:16.5px;color:var(--gold2)">${esc(x.hero||x.pdf_name)}</b>
+            ${x.score?`<span class="score">${esc(x.score)} <span style="font-size:12px" class="muted">баллов</span></span>`:''}
+          </div>
+          <div class="verd">${esc(x.verdict)}</div>
+        </div>`).join('')}
+      </div>
+    </div>`;
   }).join('');
+  box.innerHTML = html || '<p class="muted" style="padding:10px 0">Ничего не найдено.</p>';
 }
 </script>
 
