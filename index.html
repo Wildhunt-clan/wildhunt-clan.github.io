@@ -183,6 +183,17 @@ tr:hover td{background:#ffffff06}
  .overlay .hpage{width:100%;max-width:100%;border-radius:0}
 }
 
+
+/* ---- сравнение героев ---- */
+.mechchips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 2px}
+.mechchips button{font-size:12.5px;padding:4px 11px;border-radius:999px;border:1px solid #4a3b22;background:rgba(255,255,255,.03);color:#d8cba8;cursor:pointer;transition:all .15s}
+.mechchips button.on{border-color:var(--gold);color:var(--gold);background:rgba(200,150,62,.14)}
+.mechchips button:hover{border-color:var(--gold)}
+.cmp-best{color:var(--gold);font-weight:700}
+.cmp-wrap{overflow-x:auto;margin-top:12px}
+.cmp-wrap table{min-width:520px}
+.cmp-wrap td,.cmp-wrap th{vertical-align:top}
+.cmp-abilities{font-size:12.5px;line-height:1.5;white-space:pre-wrap}
 </style>
 </head>
 <body>
@@ -216,6 +227,7 @@ tr:hover td{background:#ffffff06}
     <div class="subtabs" id="heroSubTabs"></div>
     <div id="sub-heroes" class="subpane"></div>
     <div id="sub-tl" class="subpane" style="display:none"></div>
+    <div id="sub-cmp" class="subpane" style="display:none"></div>
   </section>
   <section class="tab" id="tab-Боссы">
     <div class="subtabs" id="bossSubTabs"></div>
@@ -285,7 +297,7 @@ function heroChip(name){
 }
 
 /* ---------- вкладки ---------- */
-const NAV = ['Главная','Состав','Герои','Боссы','Клан БОСС','Снаряжение','События'];
+const NAV = ['Главная','Состав','Герои','Боссы','Клан БОСС','Снаряжение','События']];
 let curTab = 'Главная';
 function showTab(name){
   curTab = name;
@@ -571,6 +583,8 @@ function renderHeroGrid(){
           ${uniq('archetype').map(p=>`<option${HF.archetype===p?' selected':''}>${p}</option>`).join('')}</select>
         <select onchange="HF.affinity=this.value;renderHeroGrid(true)"><option value="">Сродство: все</option>
           ${uniq('affinity').map(p=>`<option${HF.affinity===p?' selected':''}>${p}</option>`).join('')}</select>
+        <select onchange="HF.allegiance=this.value;renderHeroGrid(true)"><option value="">Лояльность: все</option>
+          ${uniq('allegiance').map(p=>`<option${HF.allegiance===p?' selected':''}>${p}</option>`).join('')}</select>
         <select onchange="HF.sort=this.value;renderHeroGrid(true)">
           <option value="name"${HF.sort==='name'?' selected':''}>Сортировка: имя</option>
           <option value="atk"${HF.sort==='atk'?' selected':''}>АТК ↓</option>
@@ -579,6 +593,7 @@ function renderHeroGrid(){
           <option value="tier"${HF.sort==='tier'?' selected':''}>Тир-рейтинг ↓</option>
         </select>
       </div>
+      <div class="mechchips" id="mechchips">${MECH.map((m,mi)=>`<button class="${(HF.mech||[]).includes(mi)?'on':''}" onclick="toggleMech(${mi})">${m[0]}</button>`).join('')}</div>
       <div class="grid" id="hgrid"></div>
       <p class="muted" id="hcount" style="margin-top:10px"></p>
     </div>`;
@@ -590,6 +605,8 @@ function renderHeroGrid(){
     if(HF.pantheon && h.pantheon!==HF.pantheon) return false;
     if(HF.archetype && h.archetype!==HF.archetype) return false;
     if(HF.affinity && h.affinity!==HF.affinity) return false;
+    if(HF.allegiance && h.allegiance!==HF.allegiance) return false;
+    const ms=HF.mech||[]; for(let mi=0;mi<ms.length;mi++){ if(!mechTest(ms[mi],h)) return false; }
     if(q){
       const blob = (h.name+' '+h.title+' '+h.abilities).toLowerCase();
       if(!blob.includes(q)) return false;
@@ -620,6 +637,7 @@ function renderHeroGrid(){
     </div>`;
   }).join('');
   $('#hcount').textContent = `Показано ${list.length} из ${D.data.heroes.length}`;
+  const mc=$('#mechchips'); if(mc) mc.querySelectorAll('button').forEach((b,i)=>b.classList.toggle('on',(HF.mech||[]).includes(i)));
   if(el.classList.contains('on') && !HF.applied){ HF.applied=true; }
 }
 
@@ -898,6 +916,15 @@ function compHTML(bid){
       <div class="chips" id="chips-${key}">${compChips(key,list)}</div></div>`;
   }).join('')}</div>`;
 }
+function addComp(key){
+  const v=document.getElementById('sel-'+key).value;
+  const list=LS.get(key,[]);
+  if(list.includes(v)){ toast('Уже в составе'); return; }
+  if(list.length>=5){ toast('Максимум 5 героев'); return; }
+  list.push(v); LS.set(key,list);
+  document.getElementById('chips-'+key).innerHTML=compChips(key,list);
+  toast('Добавлено: '+v);
+}
 function rmComp(key,n){
   const list=LS.get(key,[]).filter(x=>x!==n); LS.set(key,list);
   document.getElementById('chips-'+key).innerHTML=compChips(key,list);
@@ -938,7 +965,86 @@ function pickBoss(i){ curBoss=i; LS.set('bossSub',i);
 function renderClanBoss(){
   $('#clanPane').innerHTML=bossCard(CLANBOSS); bindNotes($('#clanPane'));
 }
-const HEROSUBS=[['Герои','sub-heroes','renderHeroGrid'],['Тир-лист','sub-tl','renderTier']];
+const HEROSUBS=[['Герои','sub-heroes','renderHeroGrid'],['Тир-лист','sub-tl','renderTier'],['Сравнение','sub-cmp','renderCompare']];
+/* ---------- механические фильтры ---------- */
+const MECH=[
+ ['❄ Заморозка',/заморозк/i],
+ ['🛡 Щит',/щит|барьер/i],
+ ['✚ Лечение',null],
+ ['☄ AoE',/AoE|по всем|всех врагов/i],
+ ['⚔ Мультиудар',/(\d+)\s*(?:раз[аы]?|удар[аы])/i],
+ ['✧ Очистка',/снимает[^.\n]{0,30}дебаф|очищает дебаф|снимает с союзн/i],
+ ['▲ Бафы',/повыша|усилив|увеличива/i],
+ ['▼ Дебафы',/сниж[аи]|штраф|ослаб|понижа|\bDown\b/i],
+ ['☯ Воскрешение',/воскреш|возрожд/i]
+];
+function mechHeal(h){
+  const a=String(h.abilities||'');
+  if(!/исцел|леч[аи]|регенер|восстанов/i.test(a)) return false;
+  const self=/исцел(яет)? себя/i.test(a);
+  const allies=/союзник|союзн|команд|пачку|всех/i.test(a);
+  return !self || allies;
+}
+function mechTest(idx,h){
+  if(idx===2) return mechHeal(h);
+  const re=MECH[idx] && MECH[idx][1]; if(!re) return false;
+  const m=String(h.abilities||'').match(re);
+  if(idx===4 && m){ const n=parseInt(m[1]); return n>=2; }
+  return !!m;
+}
+function toggleMech(i){
+  const a=HF.mech||[]; const j=a.indexOf(i);
+  if(j<0) a.push(i); else a.splice(j,1);
+  HF.mech=a; renderHeroGrid(true);
+}
+
+/* ---------- сравнение героев ---------- */
+const CMPSTATS=[['hp','ОЗ'],['atk','АТК'],['def','ЗАЩ'],['spd','СКР'],['fth','Вера'],['crate','Крит %'],['cdmg','К.УРОН'],['res','СОПР'],['acc','ТОЧН']];
+const CMPINFO=[['rarity','Редкость'],['pantheon','Пантеон'],['archetype','Архетип'],['affinity','Сродство'],['allegiance','Лояльность']];
+let CMP=LS.get('cmpSel',['','','']);
+function renderCompare(){
+  const el=$('#sub-cmp'); if(!el) return;
+  el.innerHTML = `<div class="panel">
+    <h3>Сравнение героев</h3>
+    <p class="muted" style="margin-bottom:8px">Выберите до трёх героев — таблица покажет статы и киты бок о бок. Лучшее значение в строке подсвечено золотом.</p>
+    <div class="toolrow">${[0,1,2].map(i=>`<select onchange="setCmp(${i},this.value)"><option value="">— пусто —</option>${D.data.heroes.map(h=>`<option value="${esc(h.name)}"${CMP[i]===h.name?' selected':''}>${esc(h.name)}</option>`).join('')}</select>`).join('')}</div>
+    <div class="cmp-wrap" id="cmpBody"></div>
+  </div>`;
+  drawCompare();
+}
+function setCmp(i,v){ CMP[i]=v; LS.set('cmpSel',CMP); drawCompare(); }
+function drawCompare(){
+  const el=$('#cmpBody'); if(!el) return;
+  const hs=CMP.map(n=>n?HERO[n]:null);
+  const act=hs.filter(Boolean);
+  if(!act.length){ el.innerHTML='<p class="muted" style="margin-top:10px">Выберите хотя бы одного героя.</p>'; return; }
+  const num=x=>parseFloat(String(x).replace(/[^\d.]/g,''))||0;
+  const best=k=>Math.max(...act.map(h=>num(h[k])));
+  const th=hs.map(h=>h?`<th style="min-width:170px">${esc(h.name)}<br><span class="muted" style="font-weight:400;font-size:12px">${esc(h.title)}</span></th>`:'<th></th>').join('');
+  const rowInfo=CMPINFO.map(([k,l])=>{
+    const tds=hs.map(h=>h?`<td>${esc(h[k]||'—')}</td>`:'<td></td>').join('');
+    return `<tr><td class="muted">${l}</td>${tds}</tr>`;
+  }).join('');
+  const tierRow=`<tr><td class="muted">Тир</td>${hs.map(h=>{
+    const t=h?TIER[h.name]:null;
+    return h? `<td>${t? tierBadge(t.tier)+` <span class="muted">${t.score} б.</span>`:'<span class="muted">— вне обзора —</span>'}</td>`:'<td></td>';
+  }).join('')}</tr>`;
+  const statRows=CMPSTATS.map(([k,l])=>{
+    const b=best(k);
+    const tds=hs.map(h=>{
+      if(!h) return '<td></td>';
+      const v=num(h[k]); const isBest=v===b && act.length>1;
+      return `<td class="${isBest?'cmp-best':''}">${esc(h[k])}</td>`;
+    }).join('');
+    return `<tr><td class="muted">${l}</td>${tds}</tr>`;
+  }).join('');
+  const abRows=hs.map(h=>h?`<td class="cmp-abilities">${esc(h.abilities)}</td>`:'<td></td>').join('');
+  el.innerHTML=`<table><thead><tr><th></th>${th}</tr></thead>
+    <tbody>${rowInfo}${tierRow}${statRows}</tbody>
+    <tbody><tr><td class="muted" style="font-weight:700">Способности</td>${abRows}</tr></tbody>
+  </table>`;
+}
+
 function buildHeroSubs(){
   $('#heroSubTabs').innerHTML=HEROSUBS.map(s=>`<button data-t="${s[0]}" onclick="pickHeroSub(HEROSUBS.findIndex(x=>x[0]==='${s[0]}'))">${s[0]}</button>`).join('');
   pickHeroSub(LS.get('heroSub',0));
