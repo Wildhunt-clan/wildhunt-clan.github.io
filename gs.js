@@ -1,64 +1,51 @@
-/* gs.js v6 (Wild Hunt) — тихий загрузчик тир-листа из Google Таблицы */
+/* gs.js v7 (Wild Hunt) — импринты + оружие из Google Таблиц */
 (function(){
 if(window.__GS_LOADED__)return;window.__GS_LOADED__=true;
-var ID='1m9uA9o1f6P9KBholq3eiAxIcy8foFrulZkrV6LiNmHw',
-U=['https://docs.google.com/spreadsheets/d/'+ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent('Лист1'),
-'https://docs.google.com/spreadsheets/d/'+ID+'/gviz/tq?tqx=out:csv',
-'https://docs.google.com/spreadsheets/d/'+ID+'/export?format=csv'],
-CK='gs_cache_v6',MK='gs_miss_v6',
-AL={'thorkell':['torkell','torkel','torhwell'],
-'camazotz':['kamazotz','kamazots','kamazotc'],
-'fisher king':['korol rybak','rybiy korol','ribiy korol'],
-'sphinx':['sfinks'],
-'tlaloc':['tlalok','tlatok'],
-'xiwangmu':['si van mu','sivanmu','siwanmu','sivangmu'],
-'ankhesenamun':['ankhesenamon','anhesenamun','anhesenamon'],
-'zeus':['zevs'],
-'aphrodite':['afrodita','afrodite'],
-'ymir':['imir']};
+try{window.gsApply=function(){};window.gsParseCSV=function(){return[];}}catch(e){}
+var ID1='1m9uA9o1f6P9KBholq3eiAxIcy8foFrulZkrV6LiNmHw',
+ID2='1dVroC9337CItITot7ZOMFIWW9bo61BBcKCIRAUaT4SE',
+CKI='gs_cache_imp_v7',CKW='gs_cache_weap_v7',MKI='gs_miss_imp_v7',MKW='gs_miss_weap_v7';
+function GV(id,sh){return 'https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:csv'+(sh?'&sheet='+encodeURIComponent(sh):'')}
+function EX(id){return 'https://docs.google.com/spreadsheets/d/'+id+'/export?format=csv'}
+var U1=[GV(ID1,'Лист1'),GV(ID1),EX(ID1)],U2=[GV(ID2,'Лист1'),GV(ID2),EX(ID2)];
+var ALH={'thorkell':['torkell','torkel','torhwell'],'camazotz':['kamazotz','kamazots','kamazotc'],'fisher king':['korol rybak','rybiy korol','ribiy korol'],'sphinx':['sfinks'],'tlaloc':['tlalok','tlatok'],'xiwangmu':['si van mu','sivanmu','siwanmu','sivangmu'],'ankhesenamun':['ankhesenamon','anhesenamun','anhesenamon'],'zeus':['zevs'],'aphrodite':['afrodita','afrodite'],'ymir':['imir']};
+var ALW={'aegis':'Эгида','art of war':'Искусство войны','bident':'Двузубец'};
+var RAR={legendary:'легендарное',epic:'эпическое',rare:'редкое'};
+var TG={'boss':'боссы','mobs':'мобы','do':'доб.','invok':'инвок','tank':'танки','hero with acc':'герой с ТОЧ'};
 function T(m){var t=document.createElement('div');t.textContent=m;t.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#2b2113;border:1px solid #c8963e;color:#f4d488;padding:10px 16px;border-radius:10px;z-index:9999;font-size:14px;max-width:92vw;white-space:pre-wrap';document.body.appendChild(t);setTimeout(function(){t.remove()},10000)}
 function CSV(x){var r=[],w=[],c='',q=0,i,ch;x=String(x).replace(/^\uFEFF/,'');for(i=0;i<x.length;i++){ch=x[i];if(q){if(ch=='"'){if(x[i+1]=='"'){c+='"';i++}else q=0}else c+=ch}else{if(ch=='"')q=1;else if(ch==','){w.push(c);c=''}else if(ch=='\n'){w.push(c);r.push(w);w=[];c=''}else c+=ch}}w.push(c);r.push(w);return r}
 function N(s){return String(s==null?'':s).toLowerCase().replace(/[«»"'`]/g,'').replace(/[^a-zа-яё0-9]+/g,' ').replace(/\s+/g,' ').trim()}
 var TR={'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'i','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya'};
 function K(s){return N(s).replace(/[а-яё]/g,function(c){return TR[c]||c})}
+function LEV(a,b){var m=a.length,n=b.length;if(!m)return n;if(!n)return m;var p=new Array(n+1),u=new Array(n+1),i,j,t;for(j=0;j<=n;j++)p[j]=j;for(i=1;i<=m;i++){u[0]=i;for(j=1;j<=n;j++)u[j]=Math.min(p[j]+1,u[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));t=p;p=u;u=t}return p[n]}
 function NUM(v){var m=String(v==null?'':v).replace(/\s/g,'').replace(',','.').match(/-?\d+(\.\d+)?/);return m?parseFloat(m[0]):null}
-function H(rs){for(var r=0;r<10&&r<rs.length;r++){var cs=rs[r].map(N),m={},c;for(c=0;c<cs.length;c++){var h=cs[c];if(h=='tier'||h=='тир')m.tier=c;else if(h=='rating'||h=='балл'||h=='рейтинг')m.score=c;else if(h=='name'||h=='импринт'||h=='название')m.name=c;else if(h=='hero'||h=='герой')m.hero=c;else if(h=='сп'||h=='sp')m.sp=c;else if(h=='диапазон'||h=='range')m.rng=c}if(m.tier!=null&&(m.score!=null||m.name!=null))return{h:r,m:m}}return null}
-function SP(rs,h,m){var a={},b={},r,c,v,n=Math.min(rs.length,h+60);for(r=h+1;r<n;r++){var cs=rs[r]||[];for(c=0;c<cs.length;c++){if([m.tier,m.score,m.name,m.hero].indexOf(c)>=0)continue;if(String(rs[h][c]||'').trim())continue;v=String(cs[c]||'').trim().toLowerCase();if(!v)continue;if(v=='сп'||v=='sp')a[c]=(a[c]||0)+1;else if(/\d/.test(v)&&/[-<>~]/.test(v))b[c]=(b[c]||0)+1}}var x=-1,y=-1,p=0,q=0;for(c in a)if(a[c]>p){p=a[c];x=+c}for(c in b)if(b[c]>q){q=b[c];y=+c}if(x>=0&&m.sp==null)m.sp=x;if(y>=0&&m.rng==null)m.rng=y}
-function M(s,d){var n=N(s),k=K(s),a,j;if(n&&(d[n]||d[k]))return d[n]||d[k];for(a in AL)if(a===n||a===k){for(j=0;j<AL[a].length;j++)if(d[AL[a][j]])return d[AL[a][j]]}return null}
-var ok=false;
-function A(x,silent){
-if(typeof IMP_RATE!='object'||!IMP_RATE)return;
-var rs=CSV(x);if(rs.length<2)return;
-var f=H(rs);if(!f){if(!silent)T('GS: шапка не найдена');return}
-var m=f.m;SP(rs,f.h,m);
-var d={},used={},miss=[],n=0;
-Object.keys(IMP_RATE).forEach(function(k){d[N(k)]=k;d[K(k)]=k});
-try{(window.D&&D.data&&D.data.imprints||[]).forEach(function(im){if(im&&im.name){d[N(im.name)]=im.hero;d[K(im.name)]=im.hero}})}catch(e){}
-for(var r=f.h+1;r<rs.length;r++){
-var c=rs[r];if(!c||!c.join('').trim())continue;
-var pn=m.name!=null?N(c[m.name]):'';
-var pt=m.tier!=null?String(c[m.tier]||'').trim().toLowerCase():'';
-if(pt=='tier'||pt=='тир'||(!pt&&!pn&&m.score!=null&&String(c[m.score]||'').trim().toLowerCase()=='rating'))break;
-var tier=pt.toUpperCase(),sc=m.score!=null?NUM(c[m.score]):null;
-var nm=m.name!=null?(c[m.name]||''):'',hr=m.hero!=null?(c[m.hero]||''):'',sp=null;
-if(m.sp!=null){var sv=String(c[m.sp]||'').trim().toLowerCase();sp=(sv=='sp'||sv=='сп')}
-var rg=m.rng!=null?String(c[m.rng]||'').trim():'';
-var key=hr?M(hr,d):null;if(!key&&nm)key=M(nm,d);
-if(!key){if(nm||hr)miss.push(nm||hr);continue}
-if(used[key])continue;used[key]=1;
-var rc=Object.assign({},IMP_RATE[key]);
-if(tier)rc.tier=tier;if(sc!=null)rc.score=sc;if(sp!=null)rc.sp=sp;if(rg)rc.rng=rg;
-IMP_RATE[key]=rc;n++}
-if(n){ok=true;try{localStorage.setItem(CK,x);localStorage.setItem('gsCache',JSON.stringify({t:Date.now(),data:x}))}catch(e){}
-if(typeof renderImpTier=='function')renderImpTier()}
-if(miss.length&&!silent){try{var ts=+localStorage.getItem(MK)||0;if(Date.now()-ts>432e5){localStorage.setItem(MK,String(Date.now()));T('GS: не найдены на сайте: '+miss.slice(0,6).join(', '))}}catch(e){}}
-}
-var i=0;
-function boot(){
-try{var c=localStorage.getItem(CK);if(c)A(c,true)}catch(e){}
-(function nx(){
-if(i>=U.length){if(!ok)T('GS: таблица недоступна — проверьте доступ «по ссылке»');return}
-fetch(U[i]+'&_='+Date.now()).then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){t=String(t).replace(/^\uFEFF/,'');if(t[0]=='<')throw 0;A(t,false)}).catch(function(){i++;nx()})
-})()}
-boot();
+function MISS(key,txt){try{var ts=+localStorage.getItem(key)||0;if(Date.now()-ts>432e5){localStorage.setItem(key,String(Date.now()));T(txt)}}catch(e){}}
+/* ---------- ИМПРИНТЫ ---------- */
+function hdrI(rs){for(var r=0;r<10&&r<rs.length;r++){var cs=rs[r].map(N),m={},c;for(c=0;c<cs.length;c++){var h=cs[c];if(h=='tier'||h=='тир')m.tier=c;else if(h=='rating'||h=='балл'||h=='рейтинг')m.score=c;else if(h=='name'||h=='импринт'||h=='название')m.name=c;else if(h=='hero'||h=='герой')m.hero=c;else if(h=='сп'||h=='sp')m.sp=c;else if(h=='диапазон'||h=='range')m.rng=c}if(m.tier!=null&&(m.score!=null||m.name!=null))return{h:r,m:m}}return null}
+function spd(rs,h,m){var a={},b={},r,c,v,n=Math.min(rs.length,h+60);for(r=h+1;r<n;r++){var cs=rs[r]||[];for(c=0;c<cs.length;c++){if([m.tier,m.score,m.name,m.hero].indexOf(c)>=0)continue;if(String(rs[h][c]||'').trim())continue;v=String(cs[c]||'').trim().toLowerCase();if(!v)continue;if(v=='сп'||v=='sp')a[c]=(a[c]||0)+1;else if(/\d/.test(v)&&/[-<>~]/.test(v))b[c]=(b[c]||0)+1}}var x=-1,y=-1,p=0,q=0;for(c in a)if(a[c]>p){p=a[c];x=+c}for(c in b)if(b[c]>q){q=b[c];y=+c}if(x>=0&&m.sp==null)m.sp=x;if(y>=0&&m.rng==null)m.rng=y}
+function mI(s,d){var n=N(s),k=K(s),a,j;if(n&&(d[n]||d[k]))return d[n]||d[k];for(a in ALH)if(a===n||a===k){for(j=0;j<ALH[a].length;j++)if(d[ALH[a][j]])return d[ALH[a][j]]}return null}
+var okI=false;
+function applyImp(x,silent){if(typeof IMP_RATE!='object'||!IMP_RATE)return;var rs=CSV(x);if(rs.length<2)return;var f=hdrI(rs);if(!f){if(!silent)T('GS: шапка импринтов не найдена');return}var m=f.m;spd(rs,f.h,m);var d={},used={},miss=[],n=0;Object.keys(IMP_RATE).forEach(function(k){d[N(k)]=k;d[K(k)]=k});try{(window.D&&D.data&&D.data.imprints||[]).forEach(function(im){if(im&&im.name){d[N(im.name)]=im.hero;d[K(im.name)]=im.hero}})}catch(e){}
+for(var r=f.h+1;r<rs.length;r++){var c=rs[r];if(!c||!c.join('').trim())continue;var pn=m.name!=null?N(c[m.name]):'',pt=m.tier!=null?String(c[m.tier]||'').trim().toLowerCase():'';if(pt=='tier'||pt=='тир'||(!pt&&!pn&&m.score!=null&&String(c[m.score]||'').trim().toLowerCase()=='rating'))break;var tier=pt.toUpperCase(),sc=m.score!=null?NUM(c[m.score]):null,nm=m.name!=null?(c[m.name]||''):'',hr=m.hero!=null?(c[m.hero]||''):'',sp=null;if(m.sp!=null){var sv=String(c[m.sp]||'').trim().toLowerCase();sp=(sv=='sp'||sv=='сп')}var rg=m.rng!=null?String(c[m.rng]||'').trim():'',key=hr?mI(hr,d):null;if(!key&&nm)key=mI(nm,d);if(!key){if(nm||hr)miss.push(nm||hr);continue}if(used[key])continue;used[key]=1;var rc=Object.assign({},IMP_RATE[key]);if(tier)rc.tier=tier;if(sc!=null)rc.score=sc;if(sp!=null)rc.sp=sp;if(rg)rc.rng=rg;IMP_RATE[key]=rc;n++}
+if(n){okI=true;try{localStorage.setItem(CKI,x)}catch(e){}if(typeof renderImpTier=='function')renderImpTier()}
+if(miss.length&&!silent)MISS(MKI,'GS импринты: не найдены на сайте: '+miss.slice(0,6).join(', '))}
+/* ---------- ОРУЖИЕ ---------- */
+var WDATA=[],RAW_W='';
+function hdrW(c){var m={},hdr=[];for(var i=0;i<c.length;i++){hdr.push(N(c[i]));var h=hdr[i];if(h=='tier'||h=='тир')m.tier=i;else if(h=='name')m.name=i;else if(h=='rating'||h=='балл'||h=='рейтинг')m.rating=i;else if(h=='faction'||h=='фракция')m.faction=i;else if(h=='cd')m.cd=i;else if(h=='features')m.features=i}if(m.tier!=null&&m.name!=null){m.hdr=hdr;return m}return null}
+function parseWeap(txt){var rs=CSV(txt),m=null,sec='',out=[];for(var r=0;r<rs.length;r++){var c=rs[r]||[];if(!c.join('').trim())continue;var j=c.map(N).join(' ');var wm=j.match(/(legendary|epic|rare)\s*weapon/);if(wm){sec=wm[1];continue}var f=hdrW(c);if(f){m=f;continue}if(!m||!sec)continue;var tier=String(c[m.tier]||'').trim().toUpperCase();if(!tier||/^(tier|тир)$/.test(N(tier)))continue;var nm=String(c[m.name]||'').trim();if(!nm)continue;var score=m.rating!=null?NUM(c[m.rating]):null,fac=m.faction!=null?String(c[m.faction]||'').trim():'',tags=[],rng='';for(var k=0;k<c.length;k++){if(k===m.tier||k===m.name||k===m.rating||k===m.faction||k===m.cd||k===m.features)continue;var v=String(c[k]||'').trim();if(!v)continue;var h=(m.hdr&&m.hdr[k])||'';if(/^[<>~]?\s*\d/.test(v)){if(!rng)rng=v;continue}if(v=='yes'||v=='да'||v=='+y'||v=='yes ')tags.push(TG[h]||h);else if(h)tags.push((TG[h]||h)+': '+v)}out.push({tier:tier,name:nm,score:score,fac:fac,rar:sec,tags:tags,rng:rng,w:null})}return out}
+function applyWeap(silent){var ws=(window.D&&D.data&&D.data.weapons)||[];if(!ws.length||!WDATA.length)return;var taken={},n=0,i;
+WDATA.forEach(function(rec){rec.w=null;var bd=99;ws.forEach(function(w,idx){if(taken[idx])return;var d=Math.min(LEV(K(rec.name),K(w.name)),LEV(N(rec.name),N(w.name)));var lim=K(w.name).length<=5?1:2;if(d<=lim&&d<bd){bd=d;rec.w=idx}});if(rec.w!=null)taken[rec.w]=1});
+WDATA.forEach(function(rec){if(rec.w!=null)return;var t=ALW[N(rec.name)];if(!t)return;ws.forEach(function(w,idx){if(taken[idx])return;if(N(w.name)===N(t)){rec.w=idx;taken[idx]=1}})});
+WDATA.forEach(function(rec){if(rec.w!=null)return;var cands=[];ws.forEach(function(w,idx){if(taken[idx])return;if(RAR[rec.rar]&&w.rarity&&N(w.rarity)===RAR[rec.rar]&&LEV(K(rec.fac),K(w.faction))<=2)cands.push(idx)});if(cands.length===1){rec.w=cands[0];taken[cands[0]]=1}});
+WDATA.forEach(function(rec){if(rec.w==null)return;var w=ws[rec.w];w.tier=rec.tier;w.score=rec.score;w.tags=rec.tags;w.rng=rec.rng;w.gsbadge=1;n++});
+if(n){try{localStorage.setItem(CKW,RAW_W)}catch(e){}patchWeapons()}
+if(!silent){var miss=WDATA.filter(function(r){return r.w==null}).map(function(r){return r.name});if(miss.length)MISS(MKW,'GS оружие: не сшиты: '+miss.slice(0,6).join(', '))}}
+function patchWeapons(){var body=document.getElementById('wtbody');if(!body)return;var ws=(window.D&&D.data&&D.data.weapons)||[];for(var i=0;i<body.children.length&&i<ws.length;i++){var tr=body.children[i];if(tr.getAttribute('data-gs')==='1')continue;var w=ws[i];if(!w||!w.gsbadge)continue;tr.setAttribute('data-gs','1');var b=tr.querySelector('td b');if(!b)continue;var d=document.createElement('div');d.style.cssText='margin-top:3px;font-size:12px;color:#f4d488;white-space:normal';var p=[];if(w.tier)p.push('тир '+w.tier);if(w.score!=null)p.push(String(w.score).replace('.',',')+' баллов');if(w.rng)p.push(w.rng);if(w.tags&&w.tags.length)p.push(w.tags.join(', '));d.textContent=p.join(' · ');b.parentNode.appendChild(d)}}
+try{var ogB=window.buildGear;window.buildGear=function(){try{if(ogB)ogB()}catch(e){}setTimeout(patchWeapons,100);setTimeout(patchWeapons,800)}}catch(e){}
+try{patchWeapons()}catch(e){}
+setInterval(patchWeapons,2000);
+/* ---------- ЗАПУСК ---------- */
+function boot(){try{var ci=localStorage.getItem(CKI);if(ci)applyImp(ci,true)}catch(e){}try{var cw=localStorage.getItem(CKW);if(cw){RAW_W=cw;WDATA=parseWeap(cw);applyWeap(true)}}catch(e){}
+var i1=0,i2=0;(function n1(){if(i1>=U1.length)return;fetch(U1[i1]+'&_='+Date.now()).then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){t=String(t).replace(/^\uFEFF/,'');if(t[0]=='<')throw 0;applyImp(t,false)}).catch(function(){i1++;n1()})})();(function n2(){if(i2>=U2.length)return;fetch(U2[i2]+'&_='+Date.now()).then(function(r){if(!r.ok)throw 0;return r.text()}).then(function(t){t=String(t).replace(/^\uFEFF/,'');if(t[0]=='<')throw 0;RAW_W=t;WDATA=parseWeap(t);applyWeap(false)}).catch(function(){i2++;n2()})})()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
